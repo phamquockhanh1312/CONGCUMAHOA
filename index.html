@@ -11,59 +11,48 @@
 
     <div class="container">
 
-        <h1>ỨNG DỤNG MÃ HÓA CỔ ĐIỂN</h1>
-        <p class="subtitle">
-            Mã hóa và giải mã bằng các thuật toán mã hóa cổ điển
-        </p>
+        <h1>🔐 ỨNG DỤNG MÃ HÓA CỔ ĐIỂN</h1>
+        <p class="subtitle">Mã hóa và giải mã bằng các thuật toán cổ điển</p>
 
-        <!-- Chọn loại mã -->
-        <div class="row">
+        <div class="form-group">
+            <label>Chọn thuật toán</label>
 
-            <div class="box">
-                <label>Loại mã hóa</label>
-
-                <select id="algorithm">
-                    <option value="caesar">Dịch vòng</option>
-                    <option value="substitution">Mã thay thế</option>
-                    <option value="vigenere">Mã Vigenere</option>
-                    <option value="affine">Mã Affine</option>
-                    <option value="hill">Mã Hill</option>
-                </select>
-            </div>
-
-            <div class="box">
-                <label>Hệ mã</label>
-
-                <select id="alphabet">
-                    <option value="26">Z26 - Tiếng Anh</option>
-                    <option value="29">Z29 - Tiếng Việt</option>
-                </select>
-            </div>
-
+            <select id="algorithm">
+                <option value="caesar">Dịch vòng</option>
+                <option value="substitution">Mã thay thế</option>
+                <option value="vigenere">Mã Vigenere</option>
+                <option value="affine">Mã Affine</option>
+                <option value="hill">Mã Hill</option>
+            </select>
         </div>
 
-        <!-- Bản rõ -->
-        <div class="box">
-            <label>BẢN RÕ</label>
+        <div class="form-group">
+            <label>Chọn bảng chữ cái</label>
+
+            <select id="alphabet">
+                <option value="26">Z26 - Tiếng Anh</option>
+                <option value="29">Z29 - Tiếng Việt</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Bản rõ</label>
 
             <textarea
                 id="plaintext"
                 placeholder="Nhập bản rõ cần mã hóa..."
-            ></textarea>
+                rows="5"></textarea>
         </div>
 
-        <!-- Khóa -->
-        <div class="box">
-            <label>KHÓA / THAM SỐ</label>
+        <div class="form-group">
+            <label>Khóa</label>
 
             <input
                 type="text"
                 id="key"
-                placeholder="Nhập khóa..."
-            >
+                placeholder="Nhập khóa...">
         </div>
 
-        <!-- Nút -->
         <div class="buttons">
 
             <button onclick="encrypt()">
@@ -76,14 +65,13 @@
 
         </div>
 
-        <!-- Bản mã -->
-        <div class="box">
-            <label>BẢN MÃ</label>
+        <div class="form-group">
+            <label>Bản mã</label>
 
             <textarea
                 id="ciphertext"
-                placeholder="Kết quả sẽ hiển thị ở đây..."
-            ></textarea>
+                placeholder="Kết quả bản mã..."
+                rows="5"></textarea>
         </div>
 
     </div>
