@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ứng dụng mã hóa cổ điển</title>
+    <title>Classical Cryptography</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -12,104 +12,311 @@
     <div class="container">
 
         <div class="header">
+            <div class="badge">CLASSICAL CRYPTOGRAPHY</div>
+
             <h1>🔐 ỨNG DỤNG MÃ HÓA CỔ ĐIỂN</h1>
-            <p class="subtitle">
+
+            <p>
                 Mã hóa và giải mã bằng các thuật toán mật mã cổ điển
             </p>
         </div>
 
-        <div class="form-group">
-            <label>⚙️ Cấu hình thuật toán</label>
 
-            <select id="algorithm">
-                <option value="caesar">Dịch vòng</option>
-                <option value="substitution">Mã thay thế</option>
-                <option value="vigenere">Mã Vigenere</option>
-                <option value="affine">Mã Affine</option>
-                <option value="hill">Mã Hill</option>
-            </select>
-        </div>
+        <div class="section">
 
-        <div class="form-group">
-            <label>🔤 Bảng chữ cái</label>
-
-            <select id="alphabet">
-                <option value="26">Z26 - Tiếng Anh</option>
-                <option value="29">Z29 - Tiếng Việt</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>📝 Bản rõ</label>
-
-            <textarea
-                id="plaintext"
-                placeholder="Nhập nội dung cần mã hóa..."></textarea>
-        </div>
-
-        <div class="form-group">
-            <label>🔑 Khóa</label>
-
-            <input
-                type="text"
-                id="key"
-                placeholder="Nhập khóa theo thuật toán...">
-
-            <div class="key-info">
-                <strong>Hướng dẫn khóa:</strong>
-                <span>Dịch vòng: số nguyên</span>
-                <span>Vigenere: chuỗi ký tự</span>
-                <span>Affine: a,b</span>
-                <span>Hill: a,b,c,d</span>
-                <span>Mã thay thế: chuỗi 26 hoặc 29 ký tự</span>
-            </div>
-        </div>
-
-        <div class="buttons">
-
-            <button onclick="encrypt()">
-                🔒 MÃ HÓA
-            </button>
-
-            <button onclick="decrypt()">
-                🔓 GIẢI MÃ
-            </button>
-
-        </div>
-
-        <div class="form-group">
-            <label>🔒 Bản mã</label>
-
-            <textarea
-                id="ciphertext"
-                placeholder="Kết quả mã hóa sẽ xuất hiện ở đây..."></textarea>
-        </div>
-
-        <div class="algorithm-info">
-            <div class="info-title">
-                💡 Thông tin
-            </div>
-
-            <div class="info-content">
+            <div class="section-title">
+                <span>⚙️</span>
                 <div>
-                    <strong>5 thuật toán</strong>
-                    <p>Dịch vòng · Thay thế · Vigenere · Affine · Hill</p>
-                </div>
-
-                <div>
-                    <strong>2 bảng chữ cái</strong>
-                    <p>Z26 Tiếng Anh · Z29 Tiếng Việt</p>
+                    <h2>Cấu hình mã hóa</h2>
+                    <p>Lựa chọn thuật toán và bảng chữ cái</p>
                 </div>
             </div>
+
+
+            <div class="grid">
+
+                <div class="form-group">
+                    <label>Thuật toán</label>
+
+                    <select id="algorithm">
+                        <option value="caesar">Dịch vòng</option>
+                        <option value="substitution">Mã thay thế</option>
+                        <option value="vigenere">Mã Vigenere</option>
+                        <option value="affine">Mã Affine</option>
+                        <option value="hill">Mã Hill</option>
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Bảng chữ cái</label>
+
+                    <select id="alphabet">
+                        <option value="26">Z26 - Tiếng Anh</option>
+                        <option value="29">Z29 - Tiếng Việt</option>
+                    </select>
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+                <label>Khóa mã hóa</label>
+
+                <input
+                    type="text"
+                    id="key"
+                    placeholder="Nhập khóa..."
+                >
+
+                <div class="key-guide">
+                    <span>💡</span>
+
+                    <div>
+                        <strong id="guide-title">
+                            Dịch vòng
+                        </strong>
+
+                        <p id="guide-text">
+                            Nhập khóa là một số nguyên. Ví dụ: 3
+                        </p>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+
+        <div class="section">
+
+            <div class="section-title">
+                <span>📝</span>
+
+                <div>
+                    <h2>Dữ liệu</h2>
+                    <p>Nhập bản rõ hoặc bản mã để thực hiện xử lý</p>
+                </div>
+            </div>
+
+
+            <div class="text-box">
+
+                <div class="box-header">
+                    <label>Bản rõ</label>
+                    <span>INPUT</span>
+                </div>
+
+                <textarea
+                    id="plaintext"
+                    placeholder="Nhập nội dung cần mã hóa..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="action-area">
+
+                <button
+                    class="btn-encrypt"
+                    onclick="encrypt()"
+                >
+                    🔒 MÃ HÓA
+                </button>
+
+                <button
+                    class="btn-decrypt"
+                    onclick="decrypt()"
+                >
+                    🔓 GIẢI MÃ
+                </button>
+
+            </div>
+
+
+            <div class="text-box">
+
+                <div class="box-header">
+                    <label>Bản mã</label>
+                    <span>OUTPUT</span>
+                </div>
+
+                <textarea
+                    id="ciphertext"
+                    placeholder="Kết quả mã hóa sẽ xuất hiện ở đây..."
+                ></textarea>
+
+            </div>
+
+
+            <button
+                class="btn-clear"
+                onclick="clearData()"
+            >
+                🗑️ XÓA DỮ LIỆU
+            </button>
+
+        </div>
+
+
+        <div class="algorithms">
+
+            <div class="section-title">
+                <span>🧩</span>
+
+                <div>
+                    <h2>Thuật toán hỗ trợ</h2>
+                    <p>Hệ thống hỗ trợ 5 phương pháp mã hóa cổ điển</p>
+                </div>
+            </div>
+
+
+            <div class="algorithm-grid">
+
+                <div class="algorithm-card">
+                    <div class="card-icon">🔄</div>
+                    <h3>Dịch vòng</h3>
+                    <p>Caesar Cipher</p>
+                </div>
+
+
+                <div class="algorithm-card">
+                    <div class="card-icon">🔤</div>
+                    <h3>Mã thay thế</h3>
+                    <p>Substitution Cipher</p>
+                </div>
+
+
+                <div class="algorithm-card">
+                    <div class="card-icon">🔑</div>
+                    <h3>Vigenere</h3>
+                    <p>Vigenere Cipher</p>
+                </div>
+
+
+                <div class="algorithm-card">
+                    <div class="card-icon">📐</div>
+                    <h3>Affine</h3>
+                    <p>Affine Cipher</p>
+                </div>
+
+
+                <div class="algorithm-card">
+                    <div class="card-icon">🧮</div>
+                    <h3>Hill</h3>
+                    <p>Hill Cipher</p>
+                </div>
+
+            </div>
+
+        </div>
+
 
         <div class="footer">
-            Ứng dụng mã hóa cổ điển
+            <span>🔐</span>
+            Classical Cryptography
+            <span>•</span>
+            Z26 / Z29
         </div>
 
     </div>
 
+
     <script src="script.js"></script>
+
+    <script>
+
+        const algorithmSelect =
+            document.getElementById("algorithm");
+
+        const guideTitle =
+            document.getElementById("guide-title");
+
+        const guideText =
+            document.getElementById("guide-text");
+
+
+        function updateGuide() {
+
+            const algorithm =
+                algorithmSelect.value;
+
+
+            if (algorithm === "caesar") {
+
+                guideTitle.textContent =
+                    "Dịch vòng";
+
+                guideText.textContent =
+                    "Nhập khóa là một số nguyên. Ví dụ: 3";
+
+            }
+
+
+            if (algorithm === "substitution") {
+
+                guideTitle.textContent =
+                    "Mã thay thế";
+
+                guideText.textContent =
+                    "Z26: nhập 26 ký tự. Z29: nhập 29 ký tự.";
+
+            }
+
+
+            if (algorithm === "vigenere") {
+
+                guideTitle.textContent =
+                    "Vigenere";
+
+                guideText.textContent =
+                    "Nhập khóa là chuỗi ký tự. Ví dụ: KEY";
+
+            }
+
+
+            if (algorithm === "affine") {
+
+                guideTitle.textContent =
+                    "Affine";
+
+                guideText.textContent =
+                    "Nhập khóa theo dạng a,b. Ví dụ: 5,8";
+
+            }
+
+
+            if (algorithm === "hill") {
+
+                guideTitle.textContent =
+                    "Hill";
+
+                guideText.textContent =
+                    "Nhập ma trận 2x2 theo dạng a,b,c,d. Ví dụ: 3,3,2,5";
+
+            }
+
+        }
+
+
+        function clearData() {
+
+            document.getElementById("plaintext").value = "";
+
+            document.getElementById("ciphertext").value = "";
+
+            document.getElementById("key").value = "";
+
+        }
+
+
+        algorithmSelect.addEventListener(
+            "change",
+            updateGuide
+        );
+
+        updateGuide();
+
+    </script>
 
 </body>
 </html>
