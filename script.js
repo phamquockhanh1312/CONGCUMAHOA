@@ -1,3 +1,6 @@
+const alphabet26 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const alphabet29 = "AĂÂBCDĐEÊGHIKLMNOÔƠPQRSTUƯVXY";
+
 function encrypt() {
     let text = document.getElementById("plaintext").value;
     let key = Number(document.getElementById("key").value);
@@ -14,7 +17,6 @@ function encrypt() {
         document.getElementById("ciphertext").value = result;
     }
 }
-
 
 function decrypt() {
     let text = document.getElementById("ciphertext").value;
@@ -33,76 +35,64 @@ function decrypt() {
     }
 }
 
+function getAlphabet(number) {
+    if (number === 26) {
+        return alphabet26;
+    }
 
-function caesarEncrypt(text, key, alphabet) {
+    return alphabet29;
+}
 
+function caesarEncrypt(text, key, alphabetNumber) {
+    let alphabet = getAlphabet(alphabetNumber);
     let result = "";
 
-    if (alphabet === 26) {
+    key = key % alphabet.length;
 
-        for (let i = 0; i < text.length; i++) {
+    for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+        let upperChar = char.toUpperCase();
+        let position = alphabet.indexOf(upperChar);
 
-            let char = text[i];
+        if (position === -1) {
+            result += char;
+        } else {
+            let newPosition = (position + key) % alphabet.length;
+            let newChar = alphabet[newPosition];
 
-            if (char >= 'A' && char <= 'Z') {
-
-                let code = char.charCodeAt(0) - 65;
-
-                let newCode = (code + key) % 26;
-
-                result += String.fromCharCode(newCode + 65);
-
+            if (char === char.toLowerCase()) {
+                newChar = newChar.toLowerCase();
             }
-            else if (char >= 'a' && char <= 'z') {
 
-                let code = char.charCodeAt(0) - 97;
-
-                let newCode = (code + key) % 26;
-
-                result += String.fromCharCode(newCode + 97);
-
-            }
-            else {
-                result += char;
-            }
+            result += newChar;
         }
     }
 
     return result;
 }
 
-
-function caesarDecrypt(text, key, alphabet) {
-
+function caesarDecrypt(text, key, alphabetNumber) {
+    let alphabet = getAlphabet(alphabetNumber);
     let result = "";
 
-    if (alphabet === 26) {
+    key = key % alphabet.length;
 
-        for (let i = 0; i < text.length; i++) {
+    for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+        let upperChar = char.toUpperCase();
+        let position = alphabet.indexOf(upperChar);
 
-            let char = text[i];
+        if (position === -1) {
+            result += char;
+        } else {
+            let newPosition = (position - key + alphabet.length) % alphabet.length;
+            let newChar = alphabet[newPosition];
 
-            if (char >= 'A' && char <= 'Z') {
-
-                let code = char.charCodeAt(0) - 65;
-
-                let newCode = (code - key + 26) % 26;
-
-                result += String.fromCharCode(newCode + 65);
-
+            if (char === char.toLowerCase()) {
+                newChar = newChar.toLowerCase();
             }
-            else if (char >= 'a' && char <= 'z') {
 
-                let code = char.charCodeAt(0) - 97;
-
-                let newCode = (code - key + 26) % 26;
-
-                result += String.fromCharCode(newCode + 97);
-
-            }
-            else {
-                result += char;
-            }
+            result += newChar;
         }
     }
 
