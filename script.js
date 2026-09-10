@@ -3,35 +3,45 @@ const alphabet29 = "AĂÂBCDĐEÊGHIKLMNOÔƠPQRSTUƯVXY";
 
 function encrypt() {
     let text = document.getElementById("plaintext").value;
-    let key = Number(document.getElementById("key").value);
+    let key = parseInt(document.getElementById("key").value);
     let algorithm = document.getElementById("algorithm").value;
-    let alphabet = Number(document.getElementById("alphabet").value);
+    let alphabet = parseInt(document.getElementById("alphabet").value);
 
     if (text === "") {
         alert("Vui lòng nhập bản rõ!");
         return;
     }
 
+    if (isNaN(key)) {
+        alert("Vui lòng nhập khóa!");
+        return;
+    }
+
     if (algorithm === "caesar") {
-        let result = caesarEncrypt(text, key, alphabet);
-        document.getElementById("ciphertext").value = result;
+        document.getElementById("ciphertext").value =
+            caesarEncrypt(text, key, alphabet);
     }
 }
 
 function decrypt() {
     let text = document.getElementById("ciphertext").value;
-    let key = Number(document.getElementById("key").value);
+    let key = parseInt(document.getElementById("key").value);
     let algorithm = document.getElementById("algorithm").value;
-    let alphabet = Number(document.getElementById("alphabet").value);
+    let alphabet = parseInt(document.getElementById("alphabet").value);
 
     if (text === "") {
         alert("Vui lòng nhập bản mã!");
         return;
     }
 
+    if (isNaN(key)) {
+        alert("Vui lòng nhập khóa!");
+        return;
+    }
+
     if (algorithm === "caesar") {
-        let result = caesarDecrypt(text, key, alphabet);
-        document.getElementById("plaintext").value = result;
+        document.getElementById("plaintext").value =
+            caesarDecrypt(text, key, alphabet);
     }
 }
 
@@ -47,7 +57,7 @@ function caesarEncrypt(text, key, alphabetNumber) {
     let alphabet = getAlphabet(alphabetNumber);
     let result = "";
 
-    key = key % alphabet.length;
+    key = ((key % alphabet.length) + alphabet.length) % alphabet.length;
 
     for (let i = 0; i < text.length; i++) {
         let char = text[i];
@@ -75,7 +85,7 @@ function caesarDecrypt(text, key, alphabetNumber) {
     let alphabet = getAlphabet(alphabetNumber);
     let result = "";
 
-    key = key % alphabet.length;
+    key = ((key % alphabet.length) + alphabet.length) % alphabet.length;
 
     for (let i = 0; i < text.length; i++) {
         let char = text[i];
