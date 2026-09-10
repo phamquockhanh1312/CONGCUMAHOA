@@ -2,18 +2,14 @@ const alphabet26 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const alphabet29 = "AĂÂBCDĐEÊGHIKLMNOÔƠPQRSTUƯVXY";
 
 function getAlphabet(number) {
-    if (number === 26) {
-        return alphabet26;
-    }
-
-    return alphabet29;
+    return number === 26 ? alphabet26 : alphabet29;
 }
 
 function encrypt() {
-    let text = document.getElementById("plaintext").value;
-    let key = document.getElementById("key").value;
-    let algorithm = document.getElementById("algorithm").value;
-    let alphabetNumber = parseInt(document.getElementById("alphabet").value);
+    const text = document.getElementById("plaintext").value;
+    const key = document.getElementById("key").value.trim();
+    const algorithm = document.getElementById("algorithm").value;
+    const alphabetNumber = parseInt(document.getElementById("alphabet").value);
 
     if (text === "") {
         alert("Vui lòng nhập bản rõ!");
@@ -26,7 +22,7 @@ function encrypt() {
     }
 
     if (algorithm === "caesar") {
-        let number = parseInt(key);
+        const number = parseInt(key);
 
         if (isNaN(number)) {
             alert("Khóa Dịch vòng phải là số!");
@@ -48,15 +44,15 @@ function encrypt() {
     }
 
     if (algorithm === "affine") {
-        let numbers = key.split(",");
+        const numbers = key.split(",");
 
         if (numbers.length !== 2) {
             alert("Khóa Affine nhập dạng a,b. Ví dụ: 5,8");
             return;
         }
 
-        let a = parseInt(numbers[0]);
-        let b = parseInt(numbers[1]);
+        const a = parseInt(numbers[0]);
+        const b = parseInt(numbers[1]);
 
         if (isNaN(a) || isNaN(b)) {
             alert("Khóa Affine phải là số!");
@@ -74,10 +70,10 @@ function encrypt() {
 }
 
 function decrypt() {
-    let text = document.getElementById("ciphertext").value;
-    let key = document.getElementById("key").value;
-    let algorithm = document.getElementById("algorithm").value;
-    let alphabetNumber = parseInt(document.getElementById("alphabet").value);
+    const text = document.getElementById("ciphertext").value;
+    const key = document.getElementById("key").value.trim();
+    const algorithm = document.getElementById("algorithm").value;
+    const alphabetNumber = parseInt(document.getElementById("alphabet").value);
 
     if (text === "") {
         alert("Vui lòng nhập bản mã!");
@@ -90,7 +86,7 @@ function decrypt() {
     }
 
     if (algorithm === "caesar") {
-        let number = parseInt(key);
+        const number = parseInt(key);
 
         if (isNaN(number)) {
             alert("Khóa Dịch vòng phải là số!");
@@ -112,15 +108,15 @@ function decrypt() {
     }
 
     if (algorithm === "affine") {
-        let numbers = key.split(",");
+        const numbers = key.split(",");
 
         if (numbers.length !== 2) {
             alert("Khóa Affine nhập dạng a,b. Ví dụ: 5,8");
             return;
         }
 
-        let a = parseInt(numbers[0]);
-        let b = parseInt(numbers[1]);
+        const a = parseInt(numbers[0]);
+        const b = parseInt(numbers[1]);
 
         if (isNaN(a) || isNaN(b)) {
             alert("Khóa Affine phải là số!");
@@ -138,28 +134,29 @@ function decrypt() {
 }
 
 function caesarEncrypt(text, key, alphabetNumber) {
-    let alphabet = getAlphabet(alphabetNumber);
+    const alphabet = getAlphabet(alphabetNumber);
     let result = "";
 
     key = ((key % alphabet.length) + alphabet.length) % alphabet.length;
 
     for (let i = 0; i < text.length; i++) {
-        let char = text[i];
-        let upperChar = char.toUpperCase();
-        let position = alphabet.indexOf(upperChar);
+        const char = text[i];
+        const upperChar = char.toUpperCase();
+        const position = alphabet.indexOf(upperChar);
 
         if (position === -1) {
             result += char;
-        } else {
-            let newPosition = (position + key) % alphabet.length;
-            let newChar = alphabet[newPosition];
-
-            if (char === char.toLowerCase()) {
-                newChar = newChar.toLowerCase();
-            }
-
-            result += newChar;
+            continue;
         }
+
+        const newPosition = (position + key) % alphabet.length;
+        let newChar = alphabet[newPosition];
+
+        if (char === char.toLowerCase()) {
+            newChar = newChar.toLowerCase();
+        }
+
+        result += newChar;
     }
 
     return result;
@@ -170,93 +167,126 @@ function caesarDecrypt(text, key, alphabetNumber) {
 }
 
 function substitutionEncrypt(text, key, alphabetNumber) {
-    let alphabet = getAlphabet(alphabetNumber);
+    const alphabet = getAlphabet(alphabetNumber);
+    const substitutionKey = key.toUpperCase();
     let result = "";
 
-    key = key.toUpperCase();
+    if (substitutionKey.length !== alphabet.length) {
+        alert(
+            "Khóa Mã thay thế phải có đúng " +
+            alphabet.length +
+            " ký tự!"
+        );
+        return "";
+    }
 
-    if (key.length !== alphabet.length) {
-        alert("Khóa Mã thay thế phải có " + alphabet.length + " ký tự!");
+    if (new Set(substitutionKey).size !== alphabet.length) {
+        alert("Khóa Mã thay thế không được có ký tự trùng nhau!");
         return "";
     }
 
     for (let i = 0; i < text.length; i++) {
-        let char = text[i];
-        let upperChar = char.toUpperCase();
-        let position = alphabet.indexOf(upperChar);
-
-        if (position === -1) {
-            result += char;
-        } else {
-            let newChar = key[position];
-
-            if (char === char.toLowerCase()) {
-                newChar = newChar.toLowerCase();
-            }
-
-            result += newChar;
-        }
-    }
-
-    return result;
-}
-
-function substitutionDecrypt(text, key, alphabetNumber) {
-    let alphabet = getAlphabet(alphabetNumber);
-    let result = "";
-
-    key = key.toUpperCase();
-
-    if (key.length !== alphabet.length) {
-        alert("Khóa Mã thay thế phải có " + alphabet.length + " ký tự!");
-        return "";
-    }
-
-    for (let i = 0; i < text.length; i++) {
-        let char = text[i];
-        let upperChar = char.toUpperCase();
-        let position = key.indexOf(upperChar);
-
-        if (position === -1) {
-            result += char;
-        } else {
-            let newChar = alphabet[position];
-
-            if (char === char.toLowerCase()) {
-                newChar = newChar.toLowerCase();
-            }
-
-            result += newChar;
-        }
-    }
-
-    return result;
-}
-
-function vigenereEncrypt(text, key, alphabetNumber) {
-    let alphabet = getAlphabet(alphabetNumber);
-    let result = "";
-    let keyText = key.toUpperCase();
-    let keyIndex = 0;
-
-    for (let i = 0; i < text.length; i++) {
-        let char = text[i];
-        let upperChar = char.toUpperCase();
-        let position = alphabet.indexOf(upperChar);
+        const char = text[i];
+        const upperChar = char.toUpperCase();
+        const position = alphabet.indexOf(upperChar);
 
         if (position === -1) {
             result += char;
             continue;
         }
 
-        let keyPosition = alphabet.indexOf(keyText[keyIndex]);
+        let newChar = substitutionKey[position];
 
-        if (keyPosition === -1) {
-            alert("Khóa Vigenere chỉ được chứa ký tự trong bảng chữ cái!");
-            return "";
+        if (char === char.toLowerCase()) {
+            newChar = newChar.toLowerCase();
         }
 
-        let newPosition =
+        result += newChar;
+    }
+
+    return result;
+}
+
+function substitutionDecrypt(text, key, alphabetNumber) {
+    const alphabet = getAlphabet(alphabetNumber);
+    const substitutionKey = key.toUpperCase();
+    let result = "";
+
+    if (substitutionKey.length !== alphabet.length) {
+        alert(
+            "Khóa Mã thay thế phải có đúng " +
+            alphabet.length +
+            " ký tự!"
+        );
+        return "";
+    }
+
+    if (new Set(substitutionKey).size !== alphabet.length) {
+        alert("Khóa Mã thay thế không được có ký tự trùng nhau!");
+        return "";
+    }
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const upperChar = char.toUpperCase();
+        const position = substitutionKey.indexOf(upperChar);
+
+        if (position === -1) {
+            result += char;
+            continue;
+        }
+
+        let newChar = alphabet[position];
+
+        if (char === char.toLowerCase()) {
+            newChar = newChar.toLowerCase();
+        }
+
+        result += newChar;
+    }
+
+    return result;
+}
+
+function getValidKeyPositions(key, alphabet) {
+    const positions = [];
+
+    for (let i = 0; i < key.length; i++) {
+        const position = alphabet.indexOf(key[i].toUpperCase());
+
+        if (position !== -1) {
+            positions.push(position);
+        }
+    }
+
+    return positions;
+}
+
+function vigenereEncrypt(text, key, alphabetNumber) {
+    const alphabet = getAlphabet(alphabetNumber);
+    const keyPositions = getValidKeyPositions(key, alphabet);
+    let result = "";
+    let keyIndex = 0;
+
+    if (keyPositions.length === 0) {
+        alert("Khóa Vigenere không hợp lệ!");
+        return "";
+    }
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const upperChar = char.toUpperCase();
+        const position = alphabet.indexOf(upperChar);
+
+        if (position === -1) {
+            result += char;
+            continue;
+        }
+
+        const keyPosition =
+            keyPositions[keyIndex % keyPositions.length];
+
+        const newPosition =
             (position + keyPosition) % alphabet.length;
 
         let newChar = alphabet[newPosition];
@@ -273,29 +303,30 @@ function vigenereEncrypt(text, key, alphabetNumber) {
 }
 
 function vigenereDecrypt(text, key, alphabetNumber) {
-    let alphabet = getAlphabet(alphabetNumber);
+    const alphabet = getAlphabet(alphabetNumber);
+    const keyPositions = getValidKeyPositions(key, alphabet);
     let result = "";
-    let keyText = key.toUpperCase();
     let keyIndex = 0;
 
+    if (keyPositions.length === 0) {
+        alert("Khóa Vigenere không hợp lệ!");
+        return "";
+    }
+
     for (let i = 0; i < text.length; i++) {
-        let char = text[i];
-        let upperChar = char.toUpperCase();
-        let position = alphabet.indexOf(upperChar);
+        const char = text[i];
+        const upperChar = char.toUpperCase();
+        const position = alphabet.indexOf(upperChar);
 
         if (position === -1) {
             result += char;
             continue;
         }
 
-        let keyPosition = alphabet.indexOf(keyText[keyIndex]);
+        const keyPosition =
+            keyPositions[keyIndex % keyPositions.length];
 
-        if (keyPosition === -1) {
-            alert("Khóa Vigenere chỉ được chứa ký tự trong bảng chữ cái!");
-            return "";
-        }
-
-        let newPosition =
+        const newPosition =
             (position - keyPosition + alphabet.length) %
             alphabet.length;
 
@@ -313,13 +344,16 @@ function vigenereDecrypt(text, key, alphabetNumber) {
 }
 
 function gcd(a, b) {
+    a = Math.abs(a);
+    b = Math.abs(b);
+
     while (b !== 0) {
-        let temp = a % b;
+        const temp = a % b;
         a = b;
         b = temp;
     }
 
-    return Math.abs(a);
+    return a;
 }
 
 function modInverse(a, m) {
@@ -335,42 +369,48 @@ function modInverse(a, m) {
 }
 
 function affineEncrypt(text, a, b, alphabetNumber) {
-    let alphabet = getAlphabet(alphabetNumber);
+    const alphabet = getAlphabet(alphabetNumber);
     let result = "";
 
     if (gcd(a, alphabet.length) !== 1) {
-        alert("Giá trị a không hợp lệ!");
+        alert(
+            "Giá trị a không hợp lệ. a phải nguyên tố cùng nhau với " +
+            alphabet.length
+        );
         return "";
     }
 
     for (let i = 0; i < text.length; i++) {
-        let char = text[i];
-        let upperChar = char.toUpperCase();
-        let position = alphabet.indexOf(upperChar);
+        const char = text[i];
+        const upperChar = char.toUpperCase();
+        const position = alphabet.indexOf(upperChar);
 
         if (position === -1) {
             result += char;
-        } else {
-            let newPosition =
-                (a * position + b) % alphabet.length;
-
-            let newChar = alphabet[newPosition];
-
-            if (char === char.toLowerCase()) {
-                newChar = newChar.toLowerCase();
-            }
-
-            result += newChar;
+            continue;
         }
+
+        const newPosition =
+            ((a * position + b) % alphabet.length +
+                alphabet.length) %
+            alphabet.length;
+
+        let newChar = alphabet[newPosition];
+
+        if (char === char.toLowerCase()) {
+            newChar = newChar.toLowerCase();
+        }
+
+        result += newChar;
     }
 
     return result;
 }
 
 function affineDecrypt(text, a, b, alphabetNumber) {
-    let alphabet = getAlphabet(alphabetNumber);
+    const alphabet = getAlphabet(alphabetNumber);
+    const inverse = modInverse(a, alphabet.length);
     let result = "";
-    let inverse = modInverse(a, alphabet.length);
 
     if (inverse === -1) {
         alert("Không tìm được nghịch đảo của a!");
@@ -378,45 +418,47 @@ function affineDecrypt(text, a, b, alphabetNumber) {
     }
 
     for (let i = 0; i < text.length; i++) {
-        let char = text[i];
-        let upperChar = char.toUpperCase();
-        let position = alphabet.indexOf(upperChar);
+        const char = text[i];
+        const upperChar = char.toUpperCase();
+        const position = alphabet.indexOf(upperChar);
 
         if (position === -1) {
             result += char;
-        } else {
-            let newPosition =
-                (inverse * (position - b + alphabet.length)) %
-                alphabet.length;
-
-            let newChar = alphabet[newPosition];
-
-            if (char === char.toLowerCase()) {
-                newChar = newChar.toLowerCase();
-            }
-
-            result += newChar;
+            continue;
         }
+
+        const newPosition =
+            ((inverse * (position - b)) % alphabet.length +
+                alphabet.length) %
+            alphabet.length;
+
+        let newChar = alphabet[newPosition];
+
+        if (char === char.toLowerCase()) {
+            newChar = newChar.toLowerCase();
+        }
+
+        result += newChar;
     }
 
     return result;
 }
 
 function hillEncrypt(text, key, alphabetNumber) {
-    let alphabet = getAlphabet(alphabetNumber);
-    let numbers = key.split(",").map(Number);
+    const alphabet = getAlphabet(alphabetNumber);
+    const numbers = key.split(",").map(Number);
 
     if (numbers.length !== 4 || numbers.some(isNaN)) {
         alert("Khóa Hill nhập dạng a,b,c,d. Ví dụ: 3,3,2,5");
         return "";
     }
 
-    let a = numbers[0];
-    let b = numbers[1];
-    let c = numbers[2];
-    let d = numbers[3];
+    const a = numbers[0];
+    const b = numbers[1];
+    const c = numbers[2];
+    const d = numbers[3];
 
-    let determinant = a * d - b * c;
+    const determinant = a * d - b * c;
 
     if (gcd(determinant, alphabet.length) !== 1) {
         alert("Ma trận khóa Hill không khả nghịch!");
@@ -426,10 +468,10 @@ function hillEncrypt(text, key, alphabetNumber) {
     let cleanText = "";
 
     for (let i = 0; i < text.length; i++) {
-        let position = alphabet.indexOf(text[i].toUpperCase());
+        const char = text[i].toUpperCase();
 
-        if (position !== -1) {
-            cleanText += text[i].toUpperCase();
+        if (alphabet.indexOf(char) !== -1) {
+            cleanText += char;
         }
     }
 
@@ -440,11 +482,18 @@ function hillEncrypt(text, key, alphabetNumber) {
     let result = "";
 
     for (let i = 0; i < cleanText.length; i += 2) {
-        let x1 = alphabet.indexOf(cleanText[i]);
-        let x2 = alphabet.indexOf(cleanText[i + 1]);
+        const x1 = alphabet.indexOf(cleanText[i]);
+        const x2 = alphabet.indexOf(cleanText[i + 1]);
 
-        let y1 = (a * x1 + b * x2) % alphabet.length;
-        let y2 = (c * x1 + d * x2) % alphabet.length;
+        const y1 =
+            ((a * x1 + b * x2) % alphabet.length +
+                alphabet.length) %
+            alphabet.length;
+
+        const y2 =
+            ((c * x1 + d * x2) % alphabet.length +
+                alphabet.length) %
+            alphabet.length;
 
         result += alphabet[y1];
         result += alphabet[y2];
@@ -454,21 +503,21 @@ function hillEncrypt(text, key, alphabetNumber) {
 }
 
 function hillDecrypt(text, key, alphabetNumber) {
-    let alphabet = getAlphabet(alphabetNumber);
-    let numbers = key.split(",").map(Number);
+    const alphabet = getAlphabet(alphabetNumber);
+    const numbers = key.split(",").map(Number);
 
     if (numbers.length !== 4 || numbers.some(isNaN)) {
         alert("Khóa Hill nhập dạng a,b,c,d. Ví dụ: 3,3,2,5");
         return "";
     }
 
-    let a = numbers[0];
-    let b = numbers[1];
-    let c = numbers[2];
-    let d = numbers[3];
+    const a = numbers[0];
+    const b = numbers[1];
+    const c = numbers[2];
+    const d = numbers[3];
 
-    let determinant = a * d - b * c;
-    let inverseDeterminant =
+    const determinant = a * d - b * c;
+    const inverseDeterminant =
         modInverse(determinant, alphabet.length);
 
     if (inverseDeterminant === -1) {
@@ -476,18 +525,18 @@ function hillDecrypt(text, key, alphabetNumber) {
         return "";
     }
 
-    let newA = d * inverseDeterminant;
-    let newB = -b * inverseDeterminant;
-    let newC = -c * inverseDeterminant;
-    let newD = a * inverseDeterminant;
+    const newA = d * inverseDeterminant;
+    const newB = -b * inverseDeterminant;
+    const newC = -c * inverseDeterminant;
+    const newD = a * inverseDeterminant;
 
     let cleanText = "";
 
     for (let i = 0; i < text.length; i++) {
-        let position = alphabet.indexOf(text[i].toUpperCase());
+        const char = text[i].toUpperCase();
 
-        if (position !== -1) {
-            cleanText += text[i].toUpperCase();
+        if (alphabet.indexOf(char) !== -1) {
+            cleanText += char;
         }
     }
 
@@ -498,17 +547,18 @@ function hillDecrypt(text, key, alphabetNumber) {
     let result = "";
 
     for (let i = 0; i < cleanText.length; i += 2) {
-        let x1 = alphabet.indexOf(cleanText[i]);
-        let x2 = alphabet.indexOf(cleanText[i + 1]);
+        const x1 = alphabet.indexOf(cleanText[i]);
+        const x2 = alphabet.indexOf(cleanText[i + 1]);
 
-        let y1 =
-            (newA * x1 + newB * x2) % alphabet.length;
+        const y1 =
+            ((newA * x1 + newB * x2) % alphabet.length +
+                alphabet.length) %
+            alphabet.length;
 
-        let y2 =
-            (newC * x1 + newD * x2) % alphabet.length;
-
-        y1 = (y1 + alphabet.length) % alphabet.length;
-        y2 = (y2 + alphabet.length) % alphabet.length;
+        const y2 =
+            ((newC * x1 + newD * x2) % alphabet.length +
+                alphabet.length) %
+            alphabet.length;
 
         result += alphabet[y1];
         result += alphabet[y2];
