@@ -1,4 +1,3 @@
-```javascript
 const alphabet26 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const alphabet29 = "AĂÂBCDĐEÊGHIKLMNOÔƠPQRSTUƯVXY";
 
@@ -6,11 +5,83 @@ function getAlphabet(number) {
     return number === 26 ? alphabet26 : alphabet29;
 }
 
+function updateAlgorithmUI() {
+    const algorithm = document.getElementById("algorithm").value;
+    const alphabetGroup = document.getElementById("alphabetGroup");
+    const key = document.getElementById("key");
+    const plaintext = document.getElementById("plaintext");
+
+    if (algorithm === "des") {
+        alphabetGroup.style.display = "none";
+
+        key.placeholder = "16 ký tự Hex";
+        plaintext.placeholder = "16 ký tự Hex";
+
+        if (
+            key.value === "" ||
+            key.value === "3" ||
+            key.value === "5" ||
+            key.value === "AABB09182736CCDD"
+        ) {
+            key.value = "AABB09182736CCDD";
+        }
+
+        if (plaintext.value === "") {
+            plaintext.value = "123456ABCD132536";
+        }
+
+        updateGuide();
+    } else {
+        alphabetGroup.style.display = "block";
+        key.placeholder = "Nhập khóa...";
+        plaintext.placeholder = "Nhập bản rõ...";
+        updateGuide();
+    }
+}
+
+function updateGuide() {
+    const algorithm = document.getElementById("algorithm").value;
+    const guideTitle = document.getElementById("guideTitle");
+    const guideText = document.getElementById("guideText");
+
+    if (algorithm === "caesar") {
+        guideTitle.textContent = "Dịch vòng";
+        guideText.textContent = "Khóa phải là số nguyên. Ví dụ: 3";
+    }
+
+    if (algorithm === "substitution") {
+        guideTitle.textContent = "Mã thay thế";
+        guideText.textContent = "Khóa phải có đúng số ký tự bằng bảng chữ cái";
+    }
+
+    if (algorithm === "vigenere") {
+        guideTitle.textContent = "Vigenere";
+        guideText.textContent = "Khóa là một chuỗi ký tự trong bảng chữ cái";
+    }
+
+    if (algorithm === "affine") {
+        guideTitle.textContent = "Affine";
+        guideText.textContent = "Nhập khóa theo dạng a,b. Ví dụ: 5,8";
+    }
+
+    if (algorithm === "hill") {
+        guideTitle.textContent = "Hill";
+        guideText.textContent = "Nhập khóa theo dạng a,b,c,d. Ví dụ: 3,3,2,5";
+    }
+
+    if (algorithm === "des") {
+        guideTitle.textContent = "DES";
+        guideText.textContent = "Bản rõ và khóa phải là 16 ký tự Hex. Ví dụ: 123456ABCD132536";
+    }
+}
+
 function encrypt() {
     const text = document.getElementById("plaintext").value;
     const key = document.getElementById("key").value.trim();
     const algorithm = document.getElementById("algorithm").value;
-    const alphabetNumber = parseInt(document.getElementById("alphabet").value);
+    const alphabetNumber = parseInt(
+        document.getElementById("alphabet").value
+    );
 
     if (text === "") {
         alert("Vui lòng nhập bản rõ!");
@@ -19,6 +90,16 @@ function encrypt() {
 
     if (key === "") {
         alert("Vui lòng nhập khóa!");
+        return;
+    }
+
+    if (algorithm === "des") {
+        const result = desEncrypt(text, key);
+
+        if (result !== null) {
+            document.getElementById("ciphertext").value = result;
+        }
+
         return;
     }
 
@@ -34,17 +115,17 @@ function encrypt() {
             caesarEncrypt(text, number, alphabetNumber);
     }
 
-    else if (algorithm === "substitution") {
+    if (algorithm === "substitution") {
         document.getElementById("ciphertext").value =
             substitutionEncrypt(text, key, alphabetNumber);
     }
 
-    else if (algorithm === "vigenere") {
+    if (algorithm === "vigenere") {
         document.getElementById("ciphertext").value =
             vigenereEncrypt(text, key, alphabetNumber);
     }
 
-    else if (algorithm === "affine") {
+    if (algorithm === "affine") {
         const numbers = key.split(",");
 
         if (numbers.length !== 2) {
@@ -64,17 +145,9 @@ function encrypt() {
             affineEncrypt(text, a, b, alphabetNumber);
     }
 
-    else if (algorithm === "hill") {
+    if (algorithm === "hill") {
         document.getElementById("ciphertext").value =
             hillEncrypt(text, key, alphabetNumber);
-    }
-
-    else if (algorithm === "des") {
-        const result = desEncrypt(text, key);
-
-        if (result !== "") {
-            document.getElementById("ciphertext").value = result;
-        }
     }
 }
 
@@ -82,7 +155,9 @@ function decrypt() {
     const text = document.getElementById("ciphertext").value;
     const key = document.getElementById("key").value.trim();
     const algorithm = document.getElementById("algorithm").value;
-    const alphabetNumber = parseInt(document.getElementById("alphabet").value);
+    const alphabetNumber = parseInt(
+        document.getElementById("alphabet").value
+    );
 
     if (text === "") {
         alert("Vui lòng nhập bản mã!");
@@ -91,6 +166,16 @@ function decrypt() {
 
     if (key === "") {
         alert("Vui lòng nhập khóa!");
+        return;
+    }
+
+    if (algorithm === "des") {
+        const result = desDecrypt(text, key);
+
+        if (result !== null) {
+            document.getElementById("plaintext").value = result;
+        }
+
         return;
     }
 
@@ -106,17 +191,17 @@ function decrypt() {
             caesarDecrypt(text, number, alphabetNumber);
     }
 
-    else if (algorithm === "substitution") {
+    if (algorithm === "substitution") {
         document.getElementById("plaintext").value =
             substitutionDecrypt(text, key, alphabetNumber);
     }
 
-    else if (algorithm === "vigenere") {
+    if (algorithm === "vigenere") {
         document.getElementById("plaintext").value =
             vigenereDecrypt(text, key, alphabetNumber);
     }
 
-    else if (algorithm === "affine") {
+    if (algorithm === "affine") {
         const numbers = key.split(",");
 
         if (numbers.length !== 2) {
@@ -136,23 +221,22 @@ function decrypt() {
             affineDecrypt(text, a, b, alphabetNumber);
     }
 
-    else if (algorithm === "hill") {
+    if (algorithm === "hill") {
         document.getElementById("plaintext").value =
             hillDecrypt(text, key, alphabetNumber);
     }
+}
 
-    else if (algorithm === "des") {
-        const result = desDecrypt(text, key);
-
-        if (result !== "") {
-            document.getElementById("plaintext").value = result;
-        }
-    }
+function clearData() {
+    document.getElementById("plaintext").value = "";
+    document.getElementById("ciphertext").value = "";
 }
 
 function caesarEncrypt(text, key, alphabetNumber) {
     const alphabet = getAlphabet(alphabetNumber);
     let result = "";
+
+    key = ((key % alphabet.length) + alphabet.length) % alphabet.length;
 
     for (let i = 0; i < text.length; i++) {
         const char = text[i];
@@ -164,10 +248,7 @@ function caesarEncrypt(text, key, alphabetNumber) {
             continue;
         }
 
-        const newPosition =
-            ((position + key) % alphabet.length + alphabet.length) %
-            alphabet.length;
-
+        const newPosition = (position + key) % alphabet.length;
         let newChar = alphabet[newPosition];
 
         if (char === char.toLowerCase()) {
@@ -345,8 +426,7 @@ function vigenereDecrypt(text, key, alphabetNumber) {
             keyPositions[keyIndex % keyPositions.length];
 
         const newPosition =
-            ((position - keyPosition) % alphabet.length +
-                alphabet.length) %
+            (position - keyPosition + alphabet.length) %
             alphabet.length;
 
         let newChar = alphabet[newPosition];
@@ -378,9 +458,9 @@ function gcd(a, b) {
 function modInverse(a, m) {
     a = ((a % m) + m) % m;
 
-    for (let x = 1; x < m; x++) {
-        if ((a * x) % m === 1) {
-            return x;
+    for (let i = 1; i < m; i++) {
+        if ((a * i) % m === 1) {
+            return i;
         }
     }
 
@@ -389,16 +469,15 @@ function modInverse(a, m) {
 
 function affineEncrypt(text, a, b, alphabetNumber) {
     const alphabet = getAlphabet(alphabetNumber);
+    let result = "";
 
     if (gcd(a, alphabet.length) !== 1) {
         alert(
-            "Giá trị a phải nguyên tố cùng nhau với " +
+            "Giá trị a không hợp lệ. a phải nguyên tố cùng nhau với " +
             alphabet.length
         );
         return "";
     }
-
-    let result = "";
 
     for (let i = 0; i < text.length; i++) {
         const char = text[i];
@@ -430,13 +509,12 @@ function affineEncrypt(text, a, b, alphabetNumber) {
 function affineDecrypt(text, a, b, alphabetNumber) {
     const alphabet = getAlphabet(alphabetNumber);
     const inverse = modInverse(a, alphabet.length);
+    let result = "";
 
     if (inverse === -1) {
         alert("Không tìm được nghịch đảo của a!");
         return "";
     }
-
-    let result = "";
 
     for (let i = 0; i < text.length; i++) {
         const char = text[i];
@@ -546,25 +624,10 @@ function hillDecrypt(text, key, alphabetNumber) {
         return "";
     }
 
-    const newA =
-        ((inverseDeterminant * d) % alphabet.length +
-            alphabet.length) %
-        alphabet.length;
-
-    const newB =
-        ((-inverseDeterminant * b) % alphabet.length +
-            alphabet.length) %
-        alphabet.length;
-
-    const newC =
-        ((-inverseDeterminant * c) % alphabet.length +
-            alphabet.length) %
-        alphabet.length;
-
-    const newD =
-        ((inverseDeterminant * a) % alphabet.length +
-            alphabet.length) %
-        alphabet.length;
+    const newA = d * inverseDeterminant;
+    const newB = -b * inverseDeterminant;
+    const newC = -c * inverseDeterminant;
+    const newD = a * inverseDeterminant;
 
     let cleanText = "";
 
@@ -670,91 +733,89 @@ const DES_PC2 = [
 ];
 
 const DES_SHIFTS = [
-    1, 1, 2, 2,
-    2, 2, 2, 2,
-    1, 2, 2, 2,
-    2, 2, 2, 1
+    1, 1, 2, 2, 2, 2, 2, 2,
+    1, 2, 2, 2, 2, 2, 2, 1
 ];
 
 const DES_SBOX = [
     [
-        [14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
-        [0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8],
-        [4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0],
-        [15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13]
+        [14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7],
+        [0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8],
+        [4,1,14,8,13,6,2,11,15,12,9,7,3,10,5,0],
+        [15,12,8,2,4,9,1,7,5,11,3,14,10,0,6,13]
     ],
     [
-        [15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10],
-        [3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5],
-        [0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15],
-        [13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9]
+        [15,1,8,14,6,11,3,4,9,7,2,13,12,0,5,10],
+        [3,13,4,7,15,2,8,14,12,0,1,10,6,9,11,5],
+        [0,14,7,11,10,4,13,1,5,8,12,6,9,3,2,15],
+        [13,8,10,1,3,15,4,2,11,6,7,12,0,5,14,9]
     ],
     [
-        [10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8],
-        [13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1],
-        [13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7],
-        [1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12]
+        [10,0,9,14,6,3,15,5,1,13,12,7,11,4,2,8],
+        [13,7,0,9,3,4,6,10,2,8,5,14,12,11,15,1],
+        [13,6,4,9,8,15,3,0,11,1,2,12,5,10,14,7],
+        [1,10,13,0,6,9,8,7,4,15,14,3,11,5,2,12]
     ],
     [
-        [7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15],
-        [13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9],
-        [10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4],
-        [3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14]
+        [7,13,14,3,0,6,9,10,1,2,8,5,11,12,4,15],
+        [13,8,11,5,6,15,0,3,4,7,2,12,1,10,14,9],
+        [10,6,9,0,12,11,7,13,15,1,3,14,5,2,8,4],
+        [3,15,0,6,10,1,13,8,9,4,5,11,12,7,2,14]
     ],
     [
-        [2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9],
-        [14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6],
-        [4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14],
-        [11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3]
+        [2,12,4,1,7,10,11,6,8,5,3,15,13,0,14,9],
+        [14,11,2,12,4,7,13,1,5,0,15,10,3,9,8,6],
+        [4,2,1,11,10,13,7,8,15,9,12,5,6,3,0,14],
+        [11,8,12,7,1,14,2,13,6,15,0,9,10,4,5,3]
     ],
     [
-        [12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11],
-        [10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8],
-        [9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6],
-        [4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13]
+        [12,1,10,15,9,2,6,8,0,13,3,4,14,7,5,11],
+        [10,15,4,2,7,12,9,5,6,1,13,14,0,11,3,8],
+        [9,14,15,5,2,8,12,3,7,0,4,10,1,13,11,6],
+        [4,3,2,12,9,5,15,10,11,14,1,7,6,0,8,13]
     ],
     [
-        [4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1],
-        [13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6],
-        [1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2],
-        [6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12]
+        [4,11,2,14,15,0,8,13,3,12,9,7,5,10,6,1],
+        [13,0,11,7,4,9,1,10,14,3,5,12,2,15,8,6],
+        [1,4,11,13,12,3,7,14,10,15,6,8,0,5,9,2],
+        [6,11,13,8,1,4,10,7,9,5,0,15,14,2,3,12]
     ],
     [
-        [13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7],
-        [1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2],
-        [7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8],
-        [2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11]
+        [13,2,8,4,6,15,11,1,10,9,3,14,5,0,12,7],
+        [1,15,13,8,10,3,7,4,12,5,6,11,0,14,9,2],
+        [7,11,4,1,9,12,14,2,0,6,10,13,15,3,5,8],
+        [2,1,14,7,4,10,8,13,15,12,9,0,3,5,6,11]
     ]
 ];
 
 function hexToBinary(hex) {
-    let binary = "";
+    let result = "";
 
     for (let i = 0; i < hex.length; i++) {
         const value = parseInt(hex[i], 16);
-        binary += value.toString(2).padStart(4, "0");
+        result += value.toString(2).padStart(4, "0");
     }
 
-    return binary;
+    return result;
 }
 
 function binaryToHex(binary) {
-    let hex = "";
+    let result = "";
 
     for (let i = 0; i < binary.length; i += 4) {
-        hex += parseInt(binary.substring(i, i + 4), 2)
+        result += parseInt(binary.slice(i, i + 4), 2)
             .toString(16)
             .toUpperCase();
     }
 
-    return hex;
+    return result;
 }
 
-function permute(input, table) {
+function permute(bits, table) {
     let result = "";
 
     for (let i = 0; i < table.length; i++) {
-        result += input[table[i] - 1];
+        result += bits[table[i] - 1];
     }
 
     return result;
@@ -771,15 +832,15 @@ function xorBits(a, b) {
 }
 
 function leftShift(bits, count) {
-    return bits.substring(count) + bits.substring(0, count);
+    return bits.slice(count) + bits.slice(0, count);
 }
 
 function generateDESKeys(keyHex) {
-    const keyBinary = hexToBinary(keyHex);
-    const key56 = permute(keyBinary, DES_PC1);
+    const keyBits = hexToBinary(keyHex);
+    const permutedKey = permute(keyBits, DES_PC1);
 
-    let c = key56.substring(0, 28);
-    let d = key56.substring(28, 56);
+    let c = permutedKey.slice(0, 28);
+    let d = permutedKey.slice(28);
 
     const keys = [];
 
@@ -787,9 +848,9 @@ function generateDESKeys(keyHex) {
         c = leftShift(c, DES_SHIFTS[i]);
         d = leftShift(d, DES_SHIFTS[i]);
 
-        const combined = c + d;
-
-        keys.push(permute(combined, DES_PC2));
+        keys.push(
+            permute(c + d, DES_PC2)
+        );
     }
 
     return keys;
@@ -799,33 +860,31 @@ function desFunction(right, key) {
     const expanded = permute(right, DES_E);
     const xored = xorBits(expanded, key);
 
-    let result = "";
+    let sboxResult = "";
 
     for (let i = 0; i < 8; i++) {
-        const block = xored.substring(i * 6, i * 6 + 6);
+        const block = xored.slice(i * 6, i * 6 + 6);
 
         const row =
             parseInt(block[0] + block[5], 2);
 
         const column =
-            parseInt(block.substring(1, 5), 2);
+            parseInt(block.slice(1, 5), 2);
 
-        const value =
-            DES_SBOX[i][row][column];
+        const value = DES_SBOX[i][row][column];
 
-        result += value.toString(2).padStart(4, "0");
+        sboxResult += value.toString(2).padStart(4, "0");
     }
 
-    return permute(result, DES_P);
+    return permute(sboxResult, DES_P);
 }
 
-function desBlock(blockHex, keyHex, decryptMode) {
-    let binary = hexToBinary(blockHex);
+function desBlock(textHex, keyHex, decryptMode) {
+    const textBits = hexToBinary(textHex);
+    let block = permute(textBits, DES_IP);
 
-    binary = permute(binary, DES_IP);
-
-    let left = binary.substring(0, 32);
-    let right = binary.substring(32, 64);
+    let left = block.slice(0, 32);
+    let right = block.slice(32);
 
     let keys = generateDESKeys(keyHex);
 
@@ -835,84 +894,59 @@ function desBlock(blockHex, keyHex, decryptMode) {
 
     for (let i = 0; i < 16; i++) {
         const newRight =
-            xorBits(right, desFunction(left, keys[i]));
+            xorBits(left, desFunction(right, keys[i]));
 
-        const newLeft = right;
-
-        left = newLeft;
+        left = right;
         right = newRight;
     }
 
-    const combined = right + left;
+    block = right + left;
 
-    const result = permute(combined, DES_FP);
-
-    return binaryToHex(result);
-}
-
-function isValidHex(value) {
-    return /^[0-9A-Fa-f]+$/.test(value);
-}
-
-function desEncrypt(plaintext, key) {
-    plaintext = plaintext.trim();
-    key = key.trim();
-
-    if (plaintext.length !== 16) {
-        alert("DES yêu cầu bản rõ đúng 16 ký tự Hex!");
-        return "";
-    }
-
-    if (key.length !== 16) {
-        alert("DES yêu cầu khóa đúng 16 ký tự Hex!");
-        return "";
-    }
-
-    if (!isValidHex(plaintext)) {
-        alert("Bản rõ DES chỉ được chứa ký tự Hex từ 0-9 và A-F!");
-        return "";
-    }
-
-    if (!isValidHex(key)) {
-        alert("Khóa DES chỉ được chứa ký tự Hex từ 0-9 và A-F!");
-        return "";
-    }
-
-    return desBlock(
-        plaintext.toUpperCase(),
-        key.toUpperCase(),
-        false
+    return binaryToHex(
+        permute(block, DES_FP)
     );
 }
 
-function desDecrypt(ciphertext, key) {
-    ciphertext = ciphertext.trim();
-    key = key.trim();
+function isValidHex(text) {
+    return /^[0-9A-Fa-f]{16}$/.test(text);
+}
 
-    if (ciphertext.length !== 16) {
-        alert("DES yêu cầu bản mã đúng 16 ký tự Hex!");
-        return "";
-    }
+function desEncrypt(text, key) {
+    text = text.trim().toUpperCase();
+    key = key.trim().toUpperCase();
 
-    if (key.length !== 16) {
-        alert("DES yêu cầu khóa đúng 16 ký tự Hex!");
-        return "";
-    }
-
-    if (!isValidHex(ciphertext)) {
-        alert("Bản mã DES chỉ được chứa ký tự Hex từ 0-9 và A-F!");
-        return "";
+    if (!isValidHex(text)) {
+        alert("Bản rõ DES phải gồm đúng 16 ký tự Hex!");
+        return null;
     }
 
     if (!isValidHex(key)) {
-        alert("Khóa DES chỉ được chứa ký tự Hex từ 0-9 và A-F!");
-        return "";
+        alert("Khóa DES phải gồm đúng 16 ký tự Hex!");
+        return null;
     }
 
-    return desBlock(
-        ciphertext.toUpperCase(),
-        key.toUpperCase(),
-        true
-    );
+    return desBlock(text, key, false);
 }
-```
+
+function desDecrypt(text, key) {
+    text = text.trim().toUpperCase();
+    key = key.trim().toUpperCase();
+
+    if (!isValidHex(text)) {
+        alert("Bản mã DES phải gồm đúng 16 ký tự Hex!");
+        return null;
+    }
+
+    if (!isValidHex(key)) {
+        alert("Khóa DES phải gồm đúng 16 ký tự Hex!");
+        return null;
+    }
+
+    return desBlock(text, key, true);
+}
+
+document
+    .getElementById("algorithm")
+    .addEventListener("change", updateAlgorithmUI);
+
+window.addEventListener("load", updateAlgorithmUI);
