@@ -1,482 +1,186 @@
-```html
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Classical Cryptography</title>
-
+    <title>Ứng dụng mã hóa cổ điển</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <div class="header">
+    <header>
+        <div class="badge">CLASSICAL CRYPTOGRAPHY</div>
+        <h1>🔐 ỨNG DỤNG MÃ HÓA CỔ ĐIỂN</h1>
+        <p>Mã hóa và giải mã bằng các thuật toán mật mã cổ điển</p>
+    </header>
 
-            <div class="badge">
-                CLASSICAL CRYPTOGRAPHY
+    <section class="section">
+
+        <div class="section-title">
+            <div class="section-icon">⚙️</div>
+            <div>
+                <h2>Cấu hình mã hóa</h2>
+                <p>Lựa chọn thuật toán và bảng chữ cái</p>
             </div>
-
-            <h1>
-                🔐 ỨNG DỤNG MÃ HÓA CỔ ĐIỂN
-            </h1>
-
-            <p>
-                Mã hóa và giải mã bằng các thuật toán mật mã cổ điển
-            </p>
-
         </div>
 
-        <div class="section">
-
-            <div class="section-title">
-
-                <span>⚙️</span>
-
-                <div>
-                    <h2>Cấu hình mã hóa</h2>
-
-                    <p>
-                        Lựa chọn thuật toán và bảng chữ cái
-                    </p>
-                </div>
-
-            </div>
-
-            <div class="grid">
-
-                <div class="form-group">
-
-                    <label for="algorithm">
-                        Thuật toán
-                    </label>
-
-                    <select id="algorithm">
-
-                        <option value="caesar">
-                            Dịch vòng
-                        </option>
-
-                        <option value="substitution">
-                            Mã thay thế
-                        </option>
-
-                        <option value="vigenere">
-                            Mã Vigenere
-                        </option>
-
-                        <option value="affine">
-                            Mã Affine
-                        </option>
-
-                        <option value="hill">
-                            Mã Hill
-                        </option>
-
-                        <option value="des">
-                            Mã DES
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="alphabet">
-                        Bảng chữ cái
-                    </label>
-
-                    <select id="alphabet">
-
-                        <option value="26">
-                            Z26 - Tiếng Anh
-                        </option>
-
-                        <option value="29">
-                            Z29 - Tiếng Việt
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
+        <div class="form-grid">
 
             <div class="form-group">
+                <label for="algorithm">Thuật toán</label>
+                <select id="algorithm">
+                    <option value="caesar">Dịch vòng</option>
+                    <option value="substitution">Mã thay thế</option>
+                    <option value="vigenere">Vigenere</option>
+                    <option value="affine">Affine</option>
+                    <option value="hill">Hill</option>
+                    <option value="des">Mã DES</option>
+                </select>
+            </div>
 
-                <label for="key">
-                    Khóa mã hóa
-                </label>
-
-                <input
-                    type="text"
-                    id="key"
-                    placeholder="Nhập khóa..."
-                >
-
-                <div class="key-guide">
-
-                    <span>
-                        💡
-                    </span>
-
-                    <div>
-
-                        <strong id="guide-title">
-                            Dịch vòng
-                        </strong>
-
-                        <p id="guide-text">
-                            Nhập khóa là một số nguyên.
-                            Ví dụ: 3
-                        </p>
-
-                    </div>
-
-                </div>
-
+            <div class="form-group" id="alphabetGroup">
+                <label for="alphabet">Bảng chữ cái</label>
+                <select id="alphabet">
+                    <option value="26">Z26 - Tiếng Anh</option>
+                    <option value="29">Z29 - Tiếng Việt</option>
+                </select>
             </div>
 
         </div>
 
-        <div class="section">
-
-            <div class="section-title">
-
-                <span>📝</span>
-
-                <div>
-
-                    <h2>
-                        Dữ liệu
-                    </h2>
-
-                    <p>
-                        Nhập bản rõ hoặc bản mã để thực hiện xử lý
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div class="text-box">
-
-                <div class="box-header">
-
-                    <label for="plaintext">
-                        Bản rõ
-                    </label>
-
-                    <span>
-                        INPUT
-                    </span>
-
-                </div>
-
-                <textarea
-                    id="plaintext"
-                    placeholder="Nhập nội dung cần mã hóa..."
-                ></textarea>
-
-            </div>
-
-            <div class="action-area">
-
-                <button
-                    type="button"
-                    class="btn-encrypt"
-                    onclick="encrypt()"
-                >
-                    🔒 MÃ HÓA
-                </button>
-
-                <button
-                    type="button"
-                    class="btn-decrypt"
-                    onclick="decrypt()"
-                >
-                    🔓 GIẢI MÃ
-                </button>
-
-            </div>
-
-            <div class="text-box">
-
-                <div class="box-header">
-
-                    <label for="ciphertext">
-                        Bản mã
-                    </label>
-
-                    <span>
-                        OUTPUT
-                    </span>
-
-                </div>
-
-                <textarea
-                    id="ciphertext"
-                    placeholder="Kết quả mã hóa sẽ xuất hiện ở đây..."
-                ></textarea>
-
-            </div>
-
-            <button
-                type="button"
-                class="btn-clear"
-                onclick="clearData()"
+        <div class="form-group">
+            <label for="key">Khóa mã hóa</label>
+            <input
+                type="text"
+                id="key"
+                placeholder="Nhập khóa..."
+                autocomplete="off"
             >
-                🗑️ XÓA DỮ LIỆU
+        </div>
+
+        <div class="guide" id="guide">
+            <div class="guide-icon">💡</div>
+            <div>
+                <strong id="guideTitle">Dịch vòng</strong>
+                <p id="guideText">Nhập khóa là một số nguyên. Ví dụ: 3</p>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="section">
+
+        <div class="section-title">
+            <div class="section-icon">📝</div>
+            <div>
+                <h2>Dữ liệu</h2>
+                <p>Nhập bản rõ hoặc bản mã để thực hiện xử lý</p>
+            </div>
+        </div>
+
+        <div class="text-area-group">
+            <div class="label-row">
+                <label for="plaintext">Bản rõ</label>
+                <span>INPUT</span>
+            </div>
+
+            <textarea
+                id="plaintext"
+                placeholder="Nhập bản rõ..."
+            ></textarea>
+        </div>
+
+        <div class="button-grid">
+            <button class="btn encrypt-btn" onclick="encrypt()">
+                🔒 MÃ HÓA
             </button>
 
+            <button class="btn decrypt-btn" onclick="decrypt()">
+                🔓 GIẢI MÃ
+            </button>
         </div>
 
-        <div class="algorithms">
-
-            <div class="section-title">
-
-                <span>🧩</span>
-
-                <div>
-
-                    <h2>
-                        Thuật toán hỗ trợ
-                    </h2>
-
-                    <p>
-                        Hệ thống hỗ trợ 6 phương pháp mã hóa
-                    </p>
-
-                </div>
-
+        <div class="text-area-group">
+            <div class="label-row">
+                <label for="ciphertext">Bản mã</label>
+                <span>OUTPUT</span>
             </div>
 
-            <div class="algorithm-grid">
+            <textarea
+                id="ciphertext"
+                placeholder="Kết quả mã hóa sẽ xuất hiện ở đây..."
+            ></textarea>
+        </div>
 
-                <div class="algorithm-card">
+        <button class="clear-btn" onclick="clearData()">
+            🗑 XÓA DỮ LIỆU
+        </button>
 
-                    <div class="card-icon">
-                        🔄
-                    </div>
+    </section>
 
-                    <h3>
-                        Dịch vòng
-                    </h3>
+    <section class="section">
 
-                    <p>
-                        Caesar Cipher
-                    </p>
+        <div class="section-title">
+            <div class="section-icon">🧩</div>
+            <div>
+                <h2>Thuật toán hỗ trợ</h2>
+                <p>Hệ thống hỗ trợ 6 phương pháp mã hóa</p>
+            </div>
+        </div>
 
-                </div>
+        <div class="algorithm-grid">
 
-                <div class="algorithm-card">
+            <div class="algorithm-card">
+                <div class="card-icon">🔄</div>
+                <h3>Dịch vòng</h3>
+                <p>Caesar Cipher</p>
+            </div>
 
-                    <div class="card-icon">
-                        🔤
-                    </div>
+            <div class="algorithm-card">
+                <div class="card-icon">🔤</div>
+                <h3>Mã thay thế</h3>
+                <p>Substitution Cipher</p>
+            </div>
 
-                    <h3>
-                        Mã thay thế
-                    </h3>
+            <div class="algorithm-card">
+                <div class="card-icon">🔑</div>
+                <h3>Vigenere</h3>
+                <p>Vigenere Cipher</p>
+            </div>
 
-                    <p>
-                        Substitution Cipher
-                    </p>
+            <div class="algorithm-card">
+                <div class="card-icon">📐</div>
+                <h3>Affine</h3>
+                <p>Affine Cipher</p>
+            </div>
 
-                </div>
+            <div class="algorithm-card">
+                <div class="card-icon">🔢</div>
+                <h3>Hill</h3>
+                <p>Hill Cipher</p>
+            </div>
 
-                <div class="algorithm-card">
-
-                    <div class="card-icon">
-                        🔑
-                    </div>
-
-                    <h3>
-                        Vigenere
-                    </h3>
-
-                    <p>
-                        Vigenere Cipher
-                    </p>
-
-                </div>
-
-                <div class="algorithm-card">
-
-                    <div class="card-icon">
-                        📐
-                    </div>
-
-                    <h3>
-                        Affine
-                    </h3>
-
-                    <p>
-                        Affine Cipher
-                    </p>
-
-                </div>
-
-                <div class="algorithm-card">
-
-                    <div class="card-icon">
-                        🧮
-                    </div>
-
-                    <h3>
-                        Hill
-                    </h3>
-
-                    <p>
-                        Hill Cipher
-                    </p>
-
-                </div>
-
-                <div class="algorithm-card">
-
-                    <div class="card-icon">
-                        🔐
-                    </div>
-
-                    <h3>
-                        DES
-                    </h3>
-
-                    <p>
-                        Data Encryption Standard
-                    </p>
-
-                </div>
-
+            <div class="algorithm-card">
+                <div class="card-icon">🔐</div>
+                <h3>DES</h3>
+                <p>Data Encryption Standard</p>
             </div>
 
         </div>
 
-        <div class="footer">
+    </section>
 
-            <span>🔐</span>
+    <footer>
+        🔐 Classical Cryptography
+        <span>•</span>
+        Z26 / Z29 / DES
+    </footer>
 
-            Classical Cryptography
+</div>
 
-            <span>•</span>
-
-            Z26 / Z29 / DES
-
-        </div>
-
-    </div>
-
-    <script src="script.js"></script>
-
-    <script>
-
-        const algorithmSelect =
-            document.getElementById("algorithm");
-
-        const guideTitle =
-            document.getElementById("guide-title");
-
-        const guideText =
-            document.getElementById("guide-text");
-
-        function updateGuide() {
-
-            const algorithm =
-                algorithmSelect.value;
-
-            if (algorithm === "caesar") {
-
-                guideTitle.textContent =
-                    "Dịch vòng";
-
-                guideText.textContent =
-                    "Nhập khóa là một số nguyên. Ví dụ: 3";
-
-            }
-
-            else if (algorithm === "substitution") {
-
-                guideTitle.textContent =
-                    "Mã thay thế";
-
-                guideText.textContent =
-                    "Z26: nhập 26 ký tự. Z29: nhập 29 ký tự.";
-
-            }
-
-            else if (algorithm === "vigenere") {
-
-                guideTitle.textContent =
-                    "Vigenere";
-
-                guideText.textContent =
-                    "Nhập khóa là chuỗi ký tự. Ví dụ: KEY";
-
-            }
-
-            else if (algorithm === "affine") {
-
-                guideTitle.textContent =
-                    "Affine";
-
-                guideText.textContent =
-                    "Nhập khóa theo dạng a,b. Ví dụ: 5,8";
-
-            }
-
-            else if (algorithm === "hill") {
-
-                guideTitle.textContent =
-                    "Hill";
-
-                guideText.textContent =
-                    "Nhập ma trận 2x2 theo dạng a,b,c,d. Ví dụ: 3,3,2,5";
-
-            }
-
-            else if (algorithm === "des") {
-
-                guideTitle.textContent =
-                    "DES";
-
-                guideText.textContent =
-                    "Bản rõ và khóa phải là 16 ký tự Hex. Ví dụ: 123456ABCD132536";
-
-            }
-
-        }
-
-        function clearData() {
-
-            document.getElementById("plaintext").value =
-                "";
-
-            document.getElementById("ciphertext").value =
-                "";
-
-            document.getElementById("key").value =
-                "";
-
-        }
-
-        algorithmSelect.addEventListener(
-            "change",
-            updateGuide
-        );
-
-        updateGuide();
-
-    </script>
+<script src="script.js"></script>
 
 </body>
-
 </html>
-```
-
-Bạn chỉ cần **copy đè vào `index.html`**.
