@@ -1,9 +1,13 @@
+```html
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Classical Cryptography</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -12,56 +16,102 @@
     <div class="container">
 
         <div class="header">
-            <div class="badge">CLASSICAL CRYPTOGRAPHY</div>
 
-            <h1>🔐 ỨNG DỤNG MÃ HÓA CỔ ĐIỂN</h1>
+            <div class="badge">
+                CLASSICAL CRYPTOGRAPHY
+            </div>
+
+            <h1>
+                🔐 ỨNG DỤNG MÃ HÓA CỔ ĐIỂN
+            </h1>
 
             <p>
                 Mã hóa và giải mã bằng các thuật toán mật mã cổ điển
             </p>
-        </div>
 
+        </div>
 
         <div class="section">
 
             <div class="section-title">
+
                 <span>⚙️</span>
+
                 <div>
                     <h2>Cấu hình mã hóa</h2>
-                    <p>Lựa chọn thuật toán và bảng chữ cái</p>
-                </div>
-            </div>
 
+                    <p>
+                        Lựa chọn thuật toán và bảng chữ cái
+                    </p>
+                </div>
+
+            </div>
 
             <div class="grid">
 
                 <div class="form-group">
-                    <label>Thuật toán</label>
+
+                    <label for="algorithm">
+                        Thuật toán
+                    </label>
 
                     <select id="algorithm">
-                        <option value="caesar">Dịch vòng</option>
-                        <option value="substitution">Mã thay thế</option>
-                        <option value="vigenere">Mã Vigenere</option>
-                        <option value="affine">Mã Affine</option>
-                        <option value="hill">Mã Hill</option>
+
+                        <option value="caesar">
+                            Dịch vòng
+                        </option>
+
+                        <option value="substitution">
+                            Mã thay thế
+                        </option>
+
+                        <option value="vigenere">
+                            Mã Vigenere
+                        </option>
+
+                        <option value="affine">
+                            Mã Affine
+                        </option>
+
+                        <option value="hill">
+                            Mã Hill
+                        </option>
+
+                        <option value="des">
+                            Mã DES
+                        </option>
+
                     </select>
+
                 </div>
 
-
                 <div class="form-group">
-                    <label>Bảng chữ cái</label>
+
+                    <label for="alphabet">
+                        Bảng chữ cái
+                    </label>
 
                     <select id="alphabet">
-                        <option value="26">Z26 - Tiếng Anh</option>
-                        <option value="29">Z29 - Tiếng Việt</option>
+
+                        <option value="26">
+                            Z26 - Tiếng Anh
+                        </option>
+
+                        <option value="29">
+                            Z29 - Tiếng Việt
+                        </option>
+
                     </select>
+
                 </div>
 
             </div>
 
-
             <div class="form-group">
-                <label>Khóa mã hóa</label>
+
+                <label for="key">
+                    Khóa mã hóa
+                </label>
 
                 <input
                     type="text"
@@ -70,40 +120,62 @@
                 >
 
                 <div class="key-guide">
-                    <span>💡</span>
+
+                    <span>
+                        💡
+                    </span>
 
                     <div>
+
                         <strong id="guide-title">
                             Dịch vòng
                         </strong>
 
                         <p id="guide-text">
-                            Nhập khóa là một số nguyên. Ví dụ: 3
+                            Nhập khóa là một số nguyên.
+                            Ví dụ: 3
                         </p>
+
                     </div>
+
                 </div>
+
             </div>
 
         </div>
 
-
         <div class="section">
 
             <div class="section-title">
+
                 <span>📝</span>
 
                 <div>
-                    <h2>Dữ liệu</h2>
-                    <p>Nhập bản rõ hoặc bản mã để thực hiện xử lý</p>
-                </div>
-            </div>
 
+                    <h2>
+                        Dữ liệu
+                    </h2>
+
+                    <p>
+                        Nhập bản rõ hoặc bản mã để thực hiện xử lý
+                    </p>
+
+                </div>
+
+            </div>
 
             <div class="text-box">
 
                 <div class="box-header">
-                    <label>Bản rõ</label>
-                    <span>INPUT</span>
+
+                    <label for="plaintext">
+                        Bản rõ
+                    </label>
+
+                    <span>
+                        INPUT
+                    </span>
+
                 </div>
 
                 <textarea
@@ -113,10 +185,10 @@
 
             </div>
 
-
             <div class="action-area">
 
                 <button
+                    type="button"
                     class="btn-encrypt"
                     onclick="encrypt()"
                 >
@@ -124,6 +196,7 @@
                 </button>
 
                 <button
+                    type="button"
                     class="btn-decrypt"
                     onclick="decrypt()"
                 >
@@ -132,12 +205,18 @@
 
             </div>
 
-
             <div class="text-box">
 
                 <div class="box-header">
-                    <label>Bản mã</label>
-                    <span>OUTPUT</span>
+
+                    <label for="ciphertext">
+                        Bản mã
+                    </label>
+
+                    <span>
+                        OUTPUT
+                    </span>
+
                 </div>
 
                 <textarea
@@ -147,8 +226,8 @@
 
             </div>
 
-
             <button
+                type="button"
                 class="btn-clear"
                 onclick="clearData()"
             >
@@ -157,69 +236,141 @@
 
         </div>
 
-
         <div class="algorithms">
 
             <div class="section-title">
+
                 <span>🧩</span>
 
                 <div>
-                    <h2>Thuật toán hỗ trợ</h2>
-                    <p>Hệ thống hỗ trợ 5 phương pháp mã hóa cổ điển</p>
-                </div>
-            </div>
 
+                    <h2>
+                        Thuật toán hỗ trợ
+                    </h2>
+
+                    <p>
+                        Hệ thống hỗ trợ 6 phương pháp mã hóa
+                    </p>
+
+                </div>
+
+            </div>
 
             <div class="algorithm-grid">
 
                 <div class="algorithm-card">
-                    <div class="card-icon">🔄</div>
-                    <h3>Dịch vòng</h3>
-                    <p>Caesar Cipher</p>
+
+                    <div class="card-icon">
+                        🔄
+                    </div>
+
+                    <h3>
+                        Dịch vòng
+                    </h3>
+
+                    <p>
+                        Caesar Cipher
+                    </p>
+
                 </div>
 
-
                 <div class="algorithm-card">
-                    <div class="card-icon">🔤</div>
-                    <h3>Mã thay thế</h3>
-                    <p>Substitution Cipher</p>
+
+                    <div class="card-icon">
+                        🔤
+                    </div>
+
+                    <h3>
+                        Mã thay thế
+                    </h3>
+
+                    <p>
+                        Substitution Cipher
+                    </p>
+
                 </div>
 
-
                 <div class="algorithm-card">
-                    <div class="card-icon">🔑</div>
-                    <h3>Vigenere</h3>
-                    <p>Vigenere Cipher</p>
+
+                    <div class="card-icon">
+                        🔑
+                    </div>
+
+                    <h3>
+                        Vigenere
+                    </h3>
+
+                    <p>
+                        Vigenere Cipher
+                    </p>
+
                 </div>
 
-
                 <div class="algorithm-card">
-                    <div class="card-icon">📐</div>
-                    <h3>Affine</h3>
-                    <p>Affine Cipher</p>
+
+                    <div class="card-icon">
+                        📐
+                    </div>
+
+                    <h3>
+                        Affine
+                    </h3>
+
+                    <p>
+                        Affine Cipher
+                    </p>
+
                 </div>
 
+                <div class="algorithm-card">
+
+                    <div class="card-icon">
+                        🧮
+                    </div>
+
+                    <h3>
+                        Hill
+                    </h3>
+
+                    <p>
+                        Hill Cipher
+                    </p>
+
+                </div>
 
                 <div class="algorithm-card">
-                    <div class="card-icon">🧮</div>
-                    <h3>Hill</h3>
-                    <p>Hill Cipher</p>
+
+                    <div class="card-icon">
+                        🔐
+                    </div>
+
+                    <h3>
+                        DES
+                    </h3>
+
+                    <p>
+                        Data Encryption Standard
+                    </p>
+
                 </div>
 
             </div>
 
         </div>
 
-
         <div class="footer">
+
             <span>🔐</span>
+
             Classical Cryptography
+
             <span>•</span>
-            Z26 / Z29
+
+            Z26 / Z29 / DES
+
         </div>
 
     </div>
-
 
     <script src="script.js"></script>
 
@@ -234,12 +385,10 @@
         const guideText =
             document.getElementById("guide-text");
 
-
         function updateGuide() {
 
             const algorithm =
                 algorithmSelect.value;
-
 
             if (algorithm === "caesar") {
 
@@ -251,8 +400,7 @@
 
             }
 
-
-            if (algorithm === "substitution") {
+            else if (algorithm === "substitution") {
 
                 guideTitle.textContent =
                     "Mã thay thế";
@@ -262,8 +410,7 @@
 
             }
 
-
-            if (algorithm === "vigenere") {
+            else if (algorithm === "vigenere") {
 
                 guideTitle.textContent =
                     "Vigenere";
@@ -273,8 +420,7 @@
 
             }
 
-
-            if (algorithm === "affine") {
+            else if (algorithm === "affine") {
 
                 guideTitle.textContent =
                     "Affine";
@@ -284,8 +430,7 @@
 
             }
 
-
-            if (algorithm === "hill") {
+            else if (algorithm === "hill") {
 
                 guideTitle.textContent =
                     "Hill";
@@ -295,19 +440,30 @@
 
             }
 
-        }
+            else if (algorithm === "des") {
 
+                guideTitle.textContent =
+                    "DES";
+
+                guideText.textContent =
+                    "Bản rõ và khóa phải là 16 ký tự Hex. Ví dụ: 123456ABCD132536";
+
+            }
+
+        }
 
         function clearData() {
 
-            document.getElementById("plaintext").value = "";
+            document.getElementById("plaintext").value =
+                "";
 
-            document.getElementById("ciphertext").value = "";
+            document.getElementById("ciphertext").value =
+                "";
 
-            document.getElementById("key").value = "";
+            document.getElementById("key").value =
+                "";
 
         }
-
 
         algorithmSelect.addEventListener(
             "change",
@@ -319,4 +475,8 @@
     </script>
 
 </body>
+
 </html>
+```
+
+Bạn chỉ cần **copy đè vào `index.html`**.
