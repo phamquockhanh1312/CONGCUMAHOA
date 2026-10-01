@@ -1,952 +1,1497 @@
-const alphabet26 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const alphabet29 = "AĂÂBCDĐEÊGHIKLMNOÔƠPQRSTUƯVXY";
+// ======================================================
+// LẤY ELEMENT
+// ======================================================
 
-function getAlphabet(number) {
-    return number === 26 ? alphabet26 : alphabet29;
+const category = document.getElementById("category");
+const algorithm = document.getElementById("algorithm");
+
+const alphabet = document.getElementById("alphabet");
+const alphabetGroup = document.getElementById("alphabetGroup");
+
+const keyGroup = document.getElementById("keyGroup");
+const keyInput = document.getElementById("key");
+
+const plaintext = document.getElementById("plaintext");
+const ciphertext = document.getElementById("ciphertext");
+const bitInfo = document.getElementById("bitInfo");
+
+const encryptBtn = document.getElementById("encryptBtn");
+const decryptBtn = document.getElementById("decryptBtn");
+const clearBtn = document.getElementById("clearBtn");
+
+const guideTitle = document.getElementById("guideTitle");
+const guideText = document.getElementById("guideText");
+
+
+// ======================================================
+// DANH SÁCH THUẬT TOÁN
+// ======================================================
+
+const algorithmList = {
+
+    classical: [
+        {
+            value: "caesar",
+            text: "Dịch vòng"
+        },
+        {
+            value: "substitution",
+            text: "Mã thay thế"
+        },
+        {
+            value: "vigenere",
+            text: "Vigenere"
+        },
+        {
+            value: "affine",
+            text: "Affine"
+        },
+        {
+            value: "hill",
+            text: "Hill"
+        }
+    ],
+
+    modern: [
+        {
+            value: "aes",
+            text: "AES"
+        },
+        {
+            value: "des",
+            text: "DES"
+        }
+    ],
+
+    public: [
+        {
+            value: "rsa",
+            text: "RSA"
+        }
+    ],
+
+    hash: [
+        {
+            value: "md5",
+            text: "MD5"
+        },
+        {
+            value: "sha256",
+            text: "SHA-256"
+        }
+    ]
+
+};
+
+
+// ======================================================
+// HƯỚNG DẪN
+// ======================================================
+
+const guide = {
+
+    caesar: [
+        "Dịch vòng",
+        "Khóa là một số nguyên. Ví dụ: 3"
+    ],
+
+    substitution: [
+        "Mã thay thế",
+        "Nhập bảng thay thế. Ví dụ ZYXWVUTSRQPONMLKJIHGFEDCBA"
+    ],
+
+    vigenere: [
+        "Vigenere",
+        "Nhập khóa dạng chữ. Ví dụ: CRYPTO"
+    ],
+
+    affine: [
+        "Affine",
+        "Nhập khóa theo dạng a,b. Ví dụ: 5,8"
+    ],
+
+    hill: [
+        "Hill",
+        "Nhập ma trận 2x2 theo dạng: 3,3,2,5"
+    ],
+
+    aes: [
+        "AES",
+        "AES yêu cầu khóa phù hợp với độ dài chuẩn của thuật toán."
+    ],
+
+    des: [
+        "DES",
+        "DES sử dụng khóa 8 byte."
+    ],
+
+    rsa: [
+        "RSA",
+        "RSA sử dụng cặp khóa công khai và bí mật."
+    ],
+
+    md5: [
+        "MD5",
+        "MD5 là hàm băm một chiều và không hỗ trợ giải mã."
+    ],
+
+    sha256: [
+        "SHA-256",
+        "SHA-256 là hàm băm một chiều và không hỗ trợ giải mã."
+    ]
+
+};
+
+
+// ======================================================
+// BẢNG CHỮ CÁI
+// ======================================================
+
+const alphabet29 =
+    "aăâbcdđeêghiklmnoôơpqrstưvxy";
+
+const alphabet26 =
+    "abcdefghijklmnopqrstuvwxyz";
+
+
+// ======================================================
+// CẬP NHẬT DANH SÁCH THUẬT TOÁN
+// ======================================================
+
+function updateAlgorithms() {
+
+    const type = category.value;
+
+    algorithm.innerHTML = "";
+
+    algorithmList[type].forEach(item => {
+
+        const option = document.createElement("option");
+
+        option.value = item.value;
+        option.textContent = item.text;
+
+        algorithm.appendChild(option);
+
+    });
+
+    updateInterface();
+
 }
 
-function updateAlgorithmUI() {
-    const algorithm = document.getElementById("algorithm").value;
-    const alphabetGroup = document.getElementById("alphabetGroup");
-    const key = document.getElementById("key");
-    const plaintext = document.getElementById("plaintext");
 
-    if (algorithm === "des") {
+// ======================================================
+// CẬP NHẬT GIAO DIỆN
+// ======================================================
+
+function updateInterface() {
+
+    const type = category.value;
+    const algo = algorithm.value;
+
+    // HASH
+    if (type === "hash") {
+
+        keyGroup.style.display = "none";
+
         alphabetGroup.style.display = "none";
 
-        key.placeholder = "16 ký tự Hex";
-        plaintext.placeholder = "16 ký tự Hex";
+        decryptBtn.style.display = "none";
 
-        if (
-            key.value === "" ||
-            key.value === "3" ||
-            key.value === "5" ||
-            key.value === "AABB09182736CCDD"
-        ) {
-            key.value = "AABB09182736CCDD";
-        }
+    }
 
-        if (plaintext.value === "") {
-            plaintext.value = "123456ABCD132536";
-        }
+    // MODERN
+    else if (type === "modern") {
 
-        updateGuide();
-    } else {
+        keyGroup.style.display = "block";
+
+        alphabetGroup.style.display = "none";
+
+        decryptBtn.style.display = "block";
+
+    }
+
+    // PUBLIC KEY
+    else if (type === "public") {
+
+        keyGroup.style.display = "block";
+
+        alphabetGroup.style.display = "none";
+
+        decryptBtn.style.display = "block";
+
+    }
+
+    // CLASSICAL
+    else {
+
+        keyGroup.style.display = "block";
+
         alphabetGroup.style.display = "block";
-        key.placeholder = "Nhập khóa...";
-        plaintext.placeholder = "Nhập bản rõ...";
-        updateGuide();
+
+        decryptBtn.style.display = "block";
+
     }
+
+
+    // HƯỚNG DẪN
+
+    if (guide[algo]) {
+
+        guideTitle.textContent =
+            guide[algo][0];
+
+        guideText.textContent =
+            guide[algo][1];
+
+    }
+
+
+    // PLACEHOLDER KHÓA
+
+    switch (algo) {
+
+        case "caesar":
+
+            keyInput.placeholder =
+                "Ví dụ: 3";
+
+            break;
+
+        case "substitution":
+
+            keyInput.placeholder =
+                "Ví dụ: zyxwvutsrqponmlkjihgfedcba";
+
+            break;
+
+        case "vigenere":
+
+            keyInput.placeholder =
+                "Ví dụ: CRYPTO";
+
+            break;
+
+        case "affine":
+
+            keyInput.placeholder =
+                "Ví dụ: 5,8";
+
+            break;
+
+        case "hill":
+
+            keyInput.placeholder =
+                "Ví dụ: 3,3,2,5";
+
+            break;
+
+        default:
+
+            keyInput.placeholder =
+                "Nhập khóa...";
+
+    }
+
 }
 
-function updateGuide() {
-    const algorithm = document.getElementById("algorithm").value;
-    const guideTitle = document.getElementById("guideTitle");
-    const guideText = document.getElementById("guideText");
 
-    if (algorithm === "caesar") {
-        guideTitle.textContent = "Dịch vòng";
-        guideText.textContent = "Khóa phải là số nguyên. Ví dụ: 3";
-    }
+// ======================================================
+// XỬ LÝ CHỮ CÁI
+// ======================================================
 
-    if (algorithm === "substitution") {
-        guideTitle.textContent = "Mã thay thế";
-        guideText.textContent = "Khóa phải có đúng số ký tự bằng bảng chữ cái";
-    }
+function getAlphabet() {
 
-    if (algorithm === "vigenere") {
-        guideTitle.textContent = "Vigenere";
-        guideText.textContent = "Khóa là một chuỗi ký tự trong bảng chữ cái";
-    }
+    return alphabet.value === "29"
+        ? alphabet29
+        : alphabet26;
 
-    if (algorithm === "affine") {
-        guideTitle.textContent = "Affine";
-        guideText.textContent = "Nhập khóa theo dạng a,b. Ví dụ: 5,8";
-    }
-
-    if (algorithm === "hill") {
-        guideTitle.textContent = "Hill";
-        guideText.textContent = "Nhập khóa theo dạng a,b,c,d. Ví dụ: 3,3,2,5";
-    }
-
-    if (algorithm === "des") {
-        guideTitle.textContent = "DES";
-        guideText.textContent = "Bản rõ và khóa phải là 16 ký tự Hex. Ví dụ: 123456ABCD132536";
-    }
 }
 
-function encrypt() {
-    const text = document.getElementById("plaintext").value;
-    const key = document.getElementById("key").value.trim();
-    const algorithm = document.getElementById("algorithm").value;
-    const alphabetNumber = parseInt(
-        document.getElementById("alphabet").value
-    );
 
-    if (text === "") {
-        alert("Vui lòng nhập bản rõ!");
-        return;
-    }
+function normalizeChar(char) {
 
-    if (key === "") {
-        alert("Vui lòng nhập khóa!");
-        return;
-    }
+    return char.toLowerCase();
 
-    if (algorithm === "des") {
-        const result = desEncrypt(text, key);
-
-        if (result !== null) {
-            document.getElementById("ciphertext").value = result;
-        }
-
-        return;
-    }
-
-    if (algorithm === "caesar") {
-        const number = parseInt(key);
-
-        if (isNaN(number)) {
-            alert("Khóa Dịch vòng phải là số!");
-            return;
-        }
-
-        document.getElementById("ciphertext").value =
-            caesarEncrypt(text, number, alphabetNumber);
-    }
-
-    if (algorithm === "substitution") {
-        document.getElementById("ciphertext").value =
-            substitutionEncrypt(text, key, alphabetNumber);
-    }
-
-    if (algorithm === "vigenere") {
-        document.getElementById("ciphertext").value =
-            vigenereEncrypt(text, key, alphabetNumber);
-    }
-
-    if (algorithm === "affine") {
-        const numbers = key.split(",");
-
-        if (numbers.length !== 2) {
-            alert("Khóa Affine nhập dạng a,b. Ví dụ: 5,8");
-            return;
-        }
-
-        const a = parseInt(numbers[0]);
-        const b = parseInt(numbers[1]);
-
-        if (isNaN(a) || isNaN(b)) {
-            alert("Khóa Affine phải là số!");
-            return;
-        }
-
-        document.getElementById("ciphertext").value =
-            affineEncrypt(text, a, b, alphabetNumber);
-    }
-
-    if (algorithm === "hill") {
-        document.getElementById("ciphertext").value =
-            hillEncrypt(text, key, alphabetNumber);
-    }
 }
 
-function decrypt() {
-    const text = document.getElementById("ciphertext").value;
-    const key = document.getElementById("key").value.trim();
-    const algorithm = document.getElementById("algorithm").value;
-    const alphabetNumber = parseInt(
-        document.getElementById("alphabet").value
-    );
 
-    if (text === "") {
-        alert("Vui lòng nhập bản mã!");
-        return;
-    }
+// ======================================================
+// CAESAR
+// ======================================================
 
-    if (key === "") {
-        alert("Vui lòng nhập khóa!");
-        return;
-    }
+function caesarEncrypt(text, key) {
 
-    if (algorithm === "des") {
-        const result = desDecrypt(text, key);
+    const chars = getAlphabet();
 
-        if (result !== null) {
-            document.getElementById("plaintext").value = result;
+    key = Number(key);
+
+    return [...text].map(char => {
+
+        const lower = char.toLowerCase();
+
+        const index = chars.indexOf(lower);
+
+        if (index === -1) {
+            return char;
         }
 
-        return;
-    }
+        let newIndex =
+            (index + key) % chars.length;
 
-    if (algorithm === "caesar") {
-        const number = parseInt(key);
-
-        if (isNaN(number)) {
-            alert("Khóa Dịch vòng phải là số!");
-            return;
+        if (newIndex < 0) {
+            newIndex += chars.length;
         }
 
-        document.getElementById("plaintext").value =
-            caesarDecrypt(text, number, alphabetNumber);
-    }
+        const result = chars[newIndex];
 
-    if (algorithm === "substitution") {
-        document.getElementById("plaintext").value =
-            substitutionDecrypt(text, key, alphabetNumber);
-    }
+        return char === char.toUpperCase()
+            ? result.toUpperCase()
+            : result;
 
-    if (algorithm === "vigenere") {
-        document.getElementById("plaintext").value =
-            vigenereDecrypt(text, key, alphabetNumber);
-    }
+    }).join("");
 
-    if (algorithm === "affine") {
-        const numbers = key.split(",");
-
-        if (numbers.length !== 2) {
-            alert("Khóa Affine nhập dạng a,b. Ví dụ: 5,8");
-            return;
-        }
-
-        const a = parseInt(numbers[0]);
-        const b = parseInt(numbers[1]);
-
-        if (isNaN(a) || isNaN(b)) {
-            alert("Khóa Affine phải là số!");
-            return;
-        }
-
-        document.getElementById("plaintext").value =
-            affineDecrypt(text, a, b, alphabetNumber);
-    }
-
-    if (algorithm === "hill") {
-        document.getElementById("plaintext").value =
-            hillDecrypt(text, key, alphabetNumber);
-    }
 }
 
-function clearData() {
-    document.getElementById("plaintext").value = "";
-    document.getElementById("ciphertext").value = "";
+
+function caesarDecrypt(text, key) {
+
+    return caesarEncrypt(text, -Number(key));
+
 }
 
-function caesarEncrypt(text, key, alphabetNumber) {
-    const alphabet = getAlphabet(alphabetNumber);
-    let result = "";
 
-    key = ((key % alphabet.length) + alphabet.length) % alphabet.length;
+// ======================================================
+// VIGENERE
+// ======================================================
 
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const upperChar = char.toUpperCase();
-        const position = alphabet.indexOf(upperChar);
+function vigenere(text, key, decrypt = false) {
 
-        if (position === -1) {
-            result += char;
-            continue;
-        }
+    const chars = getAlphabet();
 
-        const newPosition = (position + key) % alphabet.length;
-        let newChar = alphabet[newPosition];
+    key = key.toLowerCase();
 
-        if (char === char.toLowerCase()) {
-            newChar = newChar.toLowerCase();
-        }
-
-        result += newChar;
-    }
-
-    return result;
-}
-
-function caesarDecrypt(text, key, alphabetNumber) {
-    return caesarEncrypt(text, -key, alphabetNumber);
-}
-
-function substitutionEncrypt(text, key, alphabetNumber) {
-    const alphabet = getAlphabet(alphabetNumber);
-    const substitutionKey = key.toUpperCase();
-    let result = "";
-
-    if (substitutionKey.length !== alphabet.length) {
-        alert(
-            "Khóa Mã thay thế phải có đúng " +
-            alphabet.length +
-            " ký tự!"
-        );
-        return "";
-    }
-
-    if (new Set(substitutionKey).size !== alphabet.length) {
-        alert("Khóa Mã thay thế không được có ký tự trùng nhau!");
-        return "";
-    }
-
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const upperChar = char.toUpperCase();
-        const position = alphabet.indexOf(upperChar);
-
-        if (position === -1) {
-            result += char;
-            continue;
-        }
-
-        let newChar = substitutionKey[position];
-
-        if (char === char.toLowerCase()) {
-            newChar = newChar.toLowerCase();
-        }
-
-        result += newChar;
-    }
-
-    return result;
-}
-
-function substitutionDecrypt(text, key, alphabetNumber) {
-    const alphabet = getAlphabet(alphabetNumber);
-    const substitutionKey = key.toUpperCase();
-    let result = "";
-
-    if (substitutionKey.length !== alphabet.length) {
-        alert(
-            "Khóa Mã thay thế phải có đúng " +
-            alphabet.length +
-            " ký tự!"
-        );
-        return "";
-    }
-
-    if (new Set(substitutionKey).size !== alphabet.length) {
-        alert("Khóa Mã thay thế không được có ký tự trùng nhau!");
-        return "";
-    }
-
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const upperChar = char.toUpperCase();
-        const position = substitutionKey.indexOf(upperChar);
-
-        if (position === -1) {
-            result += char;
-            continue;
-        }
-
-        let newChar = alphabet[position];
-
-        if (char === char.toLowerCase()) {
-            newChar = newChar.toLowerCase();
-        }
-
-        result += newChar;
-    }
-
-    return result;
-}
-
-function getValidKeyPositions(key, alphabet) {
-    const positions = [];
-
-    for (let i = 0; i < key.length; i++) {
-        const position = alphabet.indexOf(key[i].toUpperCase());
-
-        if (position !== -1) {
-            positions.push(position);
-        }
-    }
-
-    return positions;
-}
-
-function vigenereEncrypt(text, key, alphabetNumber) {
-    const alphabet = getAlphabet(alphabetNumber);
-    const keyPositions = getValidKeyPositions(key, alphabet);
-    let result = "";
     let keyIndex = 0;
 
-    if (keyPositions.length === 0) {
-        alert("Khóa Vigenere không hợp lệ!");
-        return "";
-    }
+    return [...text].map(char => {
 
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const upperChar = char.toUpperCase();
-        const position = alphabet.indexOf(upperChar);
+        const lower = char.toLowerCase();
 
-        if (position === -1) {
-            result += char;
-            continue;
+        const index =
+            chars.indexOf(lower);
+
+        if (index === -1) {
+            return char;
         }
 
-        const keyPosition =
-            keyPositions[keyIndex % keyPositions.length];
+        const keyChar =
+            key[keyIndex % key.length];
 
-        const newPosition =
-            (position + keyPosition) % alphabet.length;
+        const keyValue =
+            chars.indexOf(keyChar);
 
-        let newChar = alphabet[newPosition];
-
-        if (char === char.toLowerCase()) {
-            newChar = newChar.toLowerCase();
+        if (keyValue === -1) {
+            return char;
         }
 
-        result += newChar;
+        let shift = decrypt
+            ? -keyValue
+            : keyValue;
+
+        let newIndex =
+            (index + shift) % chars.length;
+
+        if (newIndex < 0) {
+            newIndex += chars.length;
+        }
+
         keyIndex++;
-    }
 
-    return result;
+        const result =
+            chars[newIndex];
+
+        return char === char.toUpperCase()
+            ? result.toUpperCase()
+            : result;
+
+    }).join("");
+
 }
 
-function vigenereDecrypt(text, key, alphabetNumber) {
-    const alphabet = getAlphabet(alphabetNumber);
-    const keyPositions = getValidKeyPositions(key, alphabet);
-    let result = "";
-    let keyIndex = 0;
 
-    if (keyPositions.length === 0) {
-        alert("Khóa Vigenere không hợp lệ!");
-        return "";
+// ======================================================
+// SUBSTITUTION
+// ======================================================
+
+function substitution(text, key, decrypt = false) {
+
+    const chars = getAlphabet();
+
+    key = key.toLowerCase();
+
+    if (key.length !== chars.length) {
+
+        throw new Error(
+            `Khóa phải có ${chars.length} ký tự.`
+        );
+
     }
 
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const upperChar = char.toUpperCase();
-        const position = alphabet.indexOf(upperChar);
 
-        if (position === -1) {
-            result += char;
-            continue;
-        }
+    const unique =
+        new Set(key).size;
 
-        const keyPosition =
-            keyPositions[keyIndex % keyPositions.length];
+    if (unique !== chars.length) {
 
-        const newPosition =
-            (position - keyPosition + alphabet.length) %
-            alphabet.length;
+        throw new Error(
+            "Bảng thay thế không được chứa ký tự trùng."
+        );
 
-        let newChar = alphabet[newPosition];
-
-        if (char === char.toLowerCase()) {
-            newChar = newChar.toLowerCase();
-        }
-
-        result += newChar;
-        keyIndex++;
     }
 
-    return result;
+
+    let from = chars;
+    let to = key;
+
+    if (decrypt) {
+
+        from = key;
+        to = chars;
+
+    }
+
+
+    return [...text].map(char => {
+
+        const lower =
+            char.toLowerCase();
+
+        const index =
+            from.indexOf(lower);
+
+        if (index === -1) {
+            return char;
+        }
+
+        const result =
+            to[index];
+
+        return char === char.toUpperCase()
+            ? result.toUpperCase()
+            : result;
+
+    }).join("");
+
 }
+
+
+// ======================================================
+// AFFINE
+// ======================================================
 
 function gcd(a, b) {
-    a = Math.abs(a);
-    b = Math.abs(b);
 
     while (b !== 0) {
-        const temp = a % b;
-        a = b;
-        b = temp;
+
+        const temp = b;
+
+        b = a % b;
+
+        a = temp;
+
     }
 
-    return a;
+    return Math.abs(a);
+
 }
+
 
 function modInverse(a, m) {
+
     a = ((a % m) + m) % m;
 
-    for (let i = 1; i < m; i++) {
-        if ((a * i) % m === 1) {
-            return i;
+    for (let x = 1; x < m; x++) {
+
+        if ((a * x) % m === 1) {
+            return x;
         }
+
     }
 
-    return -1;
+    return null;
+
 }
 
-function affineEncrypt(text, a, b, alphabetNumber) {
-    const alphabet = getAlphabet(alphabetNumber);
-    let result = "";
 
-    if (gcd(a, alphabet.length) !== 1) {
-        alert(
-            "Giá trị a không hợp lệ. a phải nguyên tố cùng nhau với " +
-            alphabet.length
+function affine(text, key, decrypt = false) {
+
+    const chars = getAlphabet();
+
+    const parts =
+        key.split(",").map(Number);
+
+    if (parts.length !== 2 ||
+        parts.some(Number.isNaN)) {
+
+        throw new Error(
+            "Khóa Affine phải có dạng a,b. Ví dụ: 5,8"
         );
-        return "";
+
     }
 
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const upperChar = char.toUpperCase();
-        const position = alphabet.indexOf(upperChar);
 
-        if (position === -1) {
-            result += char;
-            continue;
+    let [a, b] = parts;
+
+    const m = chars.length;
+
+
+    if (gcd(a, m) !== 1) {
+
+        throw new Error(
+            `a phải nguyên tố cùng nhau với ${m}.`
+        );
+
+    }
+
+
+    const inverse =
+        modInverse(a, m);
+
+
+    return [...text].map(char => {
+
+        const lower =
+            char.toLowerCase();
+
+        const x =
+            chars.indexOf(lower);
+
+        if (x === -1) {
+            return char;
         }
 
-        const newPosition =
-            ((a * position + b) % alphabet.length +
-                alphabet.length) %
-            alphabet.length;
 
-        let newChar = alphabet[newPosition];
+        let y;
 
-        if (char === char.toLowerCase()) {
-            newChar = newChar.toLowerCase();
+        if (!decrypt) {
+
+            y =
+                (a * x + b) % m;
+
+        } else {
+
+            y =
+                inverse * (x - b);
+
+            y =
+                ((y % m) + m) % m;
+
         }
 
-        result += newChar;
-    }
 
-    return result;
+        const result =
+            chars[y];
+
+        return char === char.toUpperCase()
+            ? result.toUpperCase()
+            : result;
+
+    }).join("");
+
 }
 
-function affineDecrypt(text, a, b, alphabetNumber) {
-    const alphabet = getAlphabet(alphabetNumber);
-    const inverse = modInverse(a, alphabet.length);
-    let result = "";
 
-    if (inverse === -1) {
-        alert("Không tìm được nghịch đảo của a!");
-        return "";
+// ======================================================
+// HILL 2x2
+// ======================================================
+
+function hill(text, key, decrypt = false) {
+
+    const chars = getAlphabet();
+
+    const m = chars.length;
+
+    const nums =
+        key.split(",").map(Number);
+
+
+    if (
+        nums.length !== 4 ||
+        nums.some(Number.isNaN)
+    ) {
+
+        throw new Error(
+            "Khóa Hill phải có dạng: 3,3,2,5"
+        );
+
     }
 
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const upperChar = char.toUpperCase();
-        const position = alphabet.indexOf(upperChar);
 
-        if (position === -1) {
-            result += char;
-            continue;
-        }
+    let [a, b, c, d] = nums;
 
-        const newPosition =
-            ((inverse * (position - b)) % alphabet.length +
-                alphabet.length) %
-            alphabet.length;
 
-        let newChar = alphabet[newPosition];
+    let det =
+        a * d - b * c;
 
-        if (char === char.toLowerCase()) {
-            newChar = newChar.toLowerCase();
-        }
+    det =
+        ((det % m) + m) % m;
 
-        result += newChar;
+
+    const invDet =
+        modInverse(det, m);
+
+
+    if (invDet === null) {
+
+        throw new Error(
+            "Ma trận Hill không khả nghịch."
+        );
+
     }
 
-    return result;
-}
 
-function hillEncrypt(text, key, alphabetNumber) {
-    const alphabet = getAlphabet(alphabetNumber);
-    const numbers = key.split(",").map(Number);
+    if (decrypt) {
 
-    if (numbers.length !== 4 || numbers.some(isNaN)) {
-        alert("Khóa Hill nhập dạng a,b,c,d. Ví dụ: 3,3,2,5");
-        return "";
+        const tempA = d;
+        const tempD = a;
+
+        a = tempA;
+        d = tempD;
+
+        b = -b;
+        c = -c;
+
+        a = a * invDet;
+        b = b * invDet;
+        c = c * invDet;
+        d = d * invDet;
+
     }
 
-    const a = numbers[0];
-    const b = numbers[1];
-    const c = numbers[2];
-    const d = numbers[3];
 
-    const determinant = a * d - b * c;
+    let cleanText = text;
 
-    if (gcd(determinant, alphabet.length) !== 1) {
-        alert("Ma trận khóa Hill không khả nghịch!");
-        return "";
-    }
 
-    let cleanText = "";
+    // giữ ký tự không thuộc alphabet
+    // nhưng Hill xử lý từng cặp ký tự
 
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i].toUpperCase();
+    const charsOnly =
+        [...cleanText].filter(char =>
+            chars.includes(char.toLowerCase())
+        );
 
-        if (alphabet.indexOf(char) !== -1) {
-            cleanText += char;
-        }
-    }
 
-    if (cleanText.length % 2 !== 0) {
-        cleanText += alphabet[0];
-    }
-
-    let result = "";
-
-    for (let i = 0; i < cleanText.length; i += 2) {
-        const x1 = alphabet.indexOf(cleanText[i]);
-        const x2 = alphabet.indexOf(cleanText[i + 1]);
-
-        const y1 =
-            ((a * x1 + b * x2) % alphabet.length +
-                alphabet.length) %
-            alphabet.length;
-
-        const y2 =
-            ((c * x1 + d * x2) % alphabet.length +
-                alphabet.length) %
-            alphabet.length;
-
-        result += alphabet[y1];
-        result += alphabet[y2];
-    }
-
-    return result;
-}
-
-function hillDecrypt(text, key, alphabetNumber) {
-    const alphabet = getAlphabet(alphabetNumber);
-    const numbers = key.split(",").map(Number);
-
-    if (numbers.length !== 4 || numbers.some(isNaN)) {
-        alert("Khóa Hill nhập dạng a,b,c,d. Ví dụ: 3,3,2,5");
-        return "";
-    }
-
-    const a = numbers[0];
-    const b = numbers[1];
-    const c = numbers[2];
-    const d = numbers[3];
-
-    const determinant = a * d - b * c;
-    const inverseDeterminant =
-        modInverse(determinant, alphabet.length);
-
-    if (inverseDeterminant === -1) {
-        alert("Ma trận khóa Hill không khả nghịch!");
-        return "";
-    }
-
-    const newA = d * inverseDeterminant;
-    const newB = -b * inverseDeterminant;
-    const newC = -c * inverseDeterminant;
-    const newD = a * inverseDeterminant;
-
-    let cleanText = "";
-
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i].toUpperCase();
-
-        if (alphabet.indexOf(char) !== -1) {
-            cleanText += char;
-        }
-    }
-
-    if (cleanText.length % 2 !== 0) {
-        cleanText += alphabet[0];
-    }
-
-    let result = "";
-
-    for (let i = 0; i < cleanText.length; i += 2) {
-        const x1 = alphabet.indexOf(cleanText[i]);
-        const x2 = alphabet.indexOf(cleanText[i + 1]);
-
-        const y1 =
-            ((newA * x1 + newB * x2) % alphabet.length +
-                alphabet.length) %
-            alphabet.length;
-
-        const y2 =
-            ((newC * x1 + newD * x2) % alphabet.length +
-                alphabet.length) %
-            alphabet.length;
-
-        result += alphabet[y1];
-        result += alphabet[y2];
-    }
-
-    return result;
-}
-
-const DES_IP = [
-    58, 50, 42, 34, 26, 18, 10, 2,
-    60, 52, 44, 36, 28, 20, 12, 4,
-    62, 54, 46, 38, 30, 22, 14, 6,
-    64, 56, 48, 40, 32, 24, 16, 8,
-    57, 49, 41, 33, 25, 17, 9, 1,
-    59, 51, 43, 35, 27, 19, 11, 3,
-    61, 53, 45, 37, 29, 21, 13, 5,
-    63, 55, 47, 39, 31, 23, 15, 7
-];
-
-const DES_FP = [
-    40, 8, 48, 16, 56, 24, 64, 32,
-    39, 7, 47, 15, 55, 23, 63, 31,
-    38, 6, 46, 14, 54, 22, 62, 30,
-    37, 5, 45, 13, 53, 21, 61, 29,
-    36, 4, 44, 12, 52, 20, 60, 28,
-    35, 3, 43, 11, 51, 19, 59, 27,
-    34, 2, 42, 10, 50, 18, 58, 26,
-    33, 1, 41, 9, 49, 17, 57, 25
-];
-
-const DES_E = [
-    32, 1, 2, 3, 4, 5,
-    4, 5, 6, 7, 8, 9,
-    8, 9, 10, 11, 12, 13,
-    12, 13, 14, 15, 16, 17,
-    16, 17, 18, 19, 20, 21,
-    20, 21, 22, 23, 24, 25,
-    24, 25, 26, 27, 28, 29,
-    28, 29, 30, 31, 32, 1
-];
-
-const DES_P = [
-    16, 7, 20, 21,
-    29, 12, 28, 17,
-    1, 15, 23, 26,
-    5, 18, 31, 10,
-    2, 8, 24, 14,
-    32, 27, 3, 9,
-    19, 13, 30, 6,
-    22, 11, 4, 25
-];
-
-const DES_PC1 = [
-    57, 49, 41, 33, 25, 17, 9,
-    1, 58, 50, 42, 34, 26, 18,
-    10, 2, 59, 51, 43, 35, 27,
-    19, 11, 3, 60, 52, 44, 36,
-    63, 55, 47, 39, 31, 23, 15,
-    7, 62, 54, 46, 38, 30, 22,
-    14, 6, 61, 53, 45, 37, 29,
-    21, 13, 5, 28, 20, 12, 4
-];
-
-const DES_PC2 = [
-    14, 17, 11, 24, 1, 5,
-    3, 28, 15, 6, 21, 10,
-    23, 19, 12, 4, 26, 8,
-    16, 7, 27, 20, 13, 2,
-    41, 52, 31, 37, 47, 55,
-    30, 40, 51, 45, 33, 48,
-    44, 49, 39, 56, 34, 53,
-    46, 42, 50, 36, 29, 32
-];
-
-const DES_SHIFTS = [
-    1, 1, 2, 2, 2, 2, 2, 2,
-    1, 2, 2, 2, 2, 2, 2, 1
-];
-
-const DES_SBOX = [
-    [
-        [14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7],
-        [0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8],
-        [4,1,14,8,13,6,2,11,15,12,9,7,3,10,5,0],
-        [15,12,8,2,4,9,1,7,5,11,3,14,10,0,6,13]
-    ],
-    [
-        [15,1,8,14,6,11,3,4,9,7,2,13,12,0,5,10],
-        [3,13,4,7,15,2,8,14,12,0,1,10,6,9,11,5],
-        [0,14,7,11,10,4,13,1,5,8,12,6,9,3,2,15],
-        [13,8,10,1,3,15,4,2,11,6,7,12,0,5,14,9]
-    ],
-    [
-        [10,0,9,14,6,3,15,5,1,13,12,7,11,4,2,8],
-        [13,7,0,9,3,4,6,10,2,8,5,14,12,11,15,1],
-        [13,6,4,9,8,15,3,0,11,1,2,12,5,10,14,7],
-        [1,10,13,0,6,9,8,7,4,15,14,3,11,5,2,12]
-    ],
-    [
-        [7,13,14,3,0,6,9,10,1,2,8,5,11,12,4,15],
-        [13,8,11,5,6,15,0,3,4,7,2,12,1,10,14,9],
-        [10,6,9,0,12,11,7,13,15,1,3,14,5,2,8,4],
-        [3,15,0,6,10,1,13,8,9,4,5,11,12,7,2,14]
-    ],
-    [
-        [2,12,4,1,7,10,11,6,8,5,3,15,13,0,14,9],
-        [14,11,2,12,4,7,13,1,5,0,15,10,3,9,8,6],
-        [4,2,1,11,10,13,7,8,15,9,12,5,6,3,0,14],
-        [11,8,12,7,1,14,2,13,6,15,0,9,10,4,5,3]
-    ],
-    [
-        [12,1,10,15,9,2,6,8,0,13,3,4,14,7,5,11],
-        [10,15,4,2,7,12,9,5,6,1,13,14,0,11,3,8],
-        [9,14,15,5,2,8,12,3,7,0,4,10,1,13,11,6],
-        [4,3,2,12,9,5,15,10,11,14,1,7,6,0,8,13]
-    ],
-    [
-        [4,11,2,14,15,0,8,13,3,12,9,7,5,10,6,1],
-        [13,0,11,7,4,9,1,10,14,3,5,12,2,15,8,6],
-        [1,4,11,13,12,3,7,14,10,15,6,8,0,5,9,2],
-        [6,11,13,8,1,4,10,7,9,5,0,15,14,2,3,12]
-    ],
-    [
-        [13,2,8,4,6,15,11,1,10,9,3,14,5,0,12,7],
-        [1,15,13,8,10,3,7,4,12,5,6,11,0,14,9,2],
-        [7,11,4,1,9,12,14,2,0,6,10,13,15,3,5,8],
-        [2,1,14,7,4,10,8,13,15,12,9,0,3,5,6,11]
-    ]
-];
-
-function hexToBinary(hex) {
-    let result = "";
-
-    for (let i = 0; i < hex.length; i++) {
-        const value = parseInt(hex[i], 16);
-        result += value.toString(2).padStart(4, "0");
-    }
-
-    return result;
-}
-
-function binaryToHex(binary) {
-    let result = "";
-
-    for (let i = 0; i < binary.length; i += 4) {
-        result += parseInt(binary.slice(i, i + 4), 2)
-            .toString(16)
-            .toUpperCase();
-    }
-
-    return result;
-}
-
-function permute(bits, table) {
-    let result = "";
-
-    for (let i = 0; i < table.length; i++) {
-        result += bits[table[i] - 1];
-    }
-
-    return result;
-}
-
-function xorBits(a, b) {
-    let result = "";
-
-    for (let i = 0; i < a.length; i++) {
-        result += a[i] === b[i] ? "0" : "1";
-    }
-
-    return result;
-}
-
-function leftShift(bits, count) {
-    return bits.slice(count) + bits.slice(0, count);
-}
-
-function generateDESKeys(keyHex) {
-    const keyBits = hexToBinary(keyHex);
-    const permutedKey = permute(keyBits, DES_PC1);
-
-    let c = permutedKey.slice(0, 28);
-    let d = permutedKey.slice(28);
-
-    const keys = [];
-
-    for (let i = 0; i < 16; i++) {
-        c = leftShift(c, DES_SHIFTS[i]);
-        d = leftShift(d, DES_SHIFTS[i]);
-
-        keys.push(
-            permute(c + d, DES_PC2)
+    if (charsOnly.length % 2 !== 0) {
+        charsOnly.push(
+            charsOnly[charsOnly.length - 1] || "x"
         );
     }
 
-    return keys;
+
+    let result = "";
+
+    for (
+        let i = 0;
+        i < charsOnly.length;
+        i += 2
+    ) {
+
+        const x1 =
+            chars.indexOf(
+                charsOnly[i].toLowerCase()
+            );
+
+        const x2 =
+            chars.indexOf(
+                charsOnly[i + 1].toLowerCase()
+            );
+
+
+        const y1 =
+            ((a * x1 + b * x2) % m + m) % m;
+
+        const y2 =
+            ((c * x1 + d * x2) % m + m) % m;
+
+
+        result +=
+            chars[y1] +
+            chars[y2];
+
+    }
+
+
+    return result;
+
 }
 
-function desFunction(right, key) {
-    const expanded = permute(right, DES_E);
-    const xored = xorBits(expanded, key);
 
-    let sboxResult = "";
+// ======================================================
+// SHA-256
+// ======================================================
 
-    for (let i = 0; i < 8; i++) {
-        const block = xored.slice(i * 6, i * 6 + 6);
+async function sha256(text) {
 
-        const row =
-            parseInt(block[0] + block[5], 2);
+    const encoder =
+        new TextEncoder();
 
-        const column =
-            parseInt(block.slice(1, 5), 2);
+    const data =
+        encoder.encode(text);
 
-        const value = DES_SBOX[i][row][column];
+    const hashBuffer =
+        await crypto.subtle.digest(
+            "SHA-256",
+            data
+        );
 
-        sboxResult += value.toString(2).padStart(4, "0");
-    }
+    const hashArray =
+        Array.from(
+            new Uint8Array(hashBuffer)
+        );
 
-    return permute(sboxResult, DES_P);
+    return hashArray
+        .map(byte =>
+            byte.toString(16).padStart(2, "0")
+        )
+        .join("");
+
 }
 
-function desBlock(textHex, keyHex, decryptMode) {
-    const textBits = hexToBinary(textHex);
-    let block = permute(textBits, DES_IP);
 
-    let left = block.slice(0, 32);
-    let right = block.slice(32);
+// ======================================================
+// MD5
+// ======================================================
 
-    let keys = generateDESKeys(keyHex);
+function md5(text) {
 
-    if (decryptMode) {
-        keys = keys.reverse();
+    // MD5 đơn giản dùng thư viện nội bộ.
+    // Không dùng cho bảo mật thực tế.
+
+    function rotateLeft(lValue, iShiftBits) {
+
+        return (
+            lValue << iShiftBits
+        ) |
+        (
+            lValue >>> (32 - iShiftBits)
+        );
+
     }
 
-    for (let i = 0; i < 16; i++) {
-        const newRight =
-            xorBits(left, desFunction(right, keys[i]));
 
-        left = right;
-        right = newRight;
+    function addUnsigned(lX, lY) {
+
+        const lX4 =
+            lX & 0x40000000;
+
+        const lY4 =
+            lY & 0x40000000;
+
+        const lX8 =
+            lX & 0x80000000;
+
+        const lY8 =
+            lY & 0x80000000;
+
+        const lResult =
+            (lX & 0x3fffffff)
+            +
+            (lY & 0x3fffffff);
+
+        if (lX4 & lY4) {
+
+            return lResult ^ 0x80000000 ^
+                lX8 ^ lY8;
+
+        }
+
+        if (lX4 | lY4) {
+
+            if (lResult & 0x40000000) {
+
+                return lResult ^
+                    0xc0000000 ^
+                    lX8 ^
+                    lY8;
+
+            }
+
+            return lResult ^
+                0x40000000 ^
+                lX8 ^
+                lY8;
+
+        }
+
+        return lResult ^
+            lX8 ^
+            lY8;
+
     }
 
-    block = right + left;
 
-    return binaryToHex(
-        permute(block, DES_FP)
-    );
+    function F(x, y, z) {
+        return (x & y) | ((~x) & z);
+    }
+
+    function G(x, y, z) {
+        return (x & z) | (y & (~z));
+    }
+
+    function H(x, y, z) {
+        return x ^ y ^ z;
+    }
+
+    function I(x, y, z) {
+        return y ^ (x | (~z));
+    }
+
+
+    function FF(a,b,c,d,x,s,ac) {
+
+        a = addUnsigned(
+            a,
+            addUnsigned(
+                addUnsigned(
+                    F(b,c,d),
+                    x
+                ),
+                ac
+            )
+        );
+
+        return addUnsigned(
+            rotateLeft(a,s),
+            b
+        );
+
+    }
+
+
+    function GG(a,b,c,d,x,s,ac) {
+
+        a = addUnsigned(
+            a,
+            addUnsigned(
+                addUnsigned(
+                    G(b,c,d),
+                    x
+                ),
+                ac
+            )
+        );
+
+        return addUnsigned(
+            rotateLeft(a,s),
+            b
+        );
+
+    }
+
+
+    function HH(a,b,c,d,x,s,ac) {
+
+        a = addUnsigned(
+            a,
+            addUnsigned(
+                addUnsigned(
+                    H(b,c,d),
+                    x
+                ),
+                ac
+            )
+        );
+
+        return addUnsigned(
+            rotateLeft(a,s),
+            b
+        );
+
+    }
+
+
+    function II(a,b,c,d,x,s,ac) {
+
+        a = addUnsigned(
+            a,
+            addUnsigned(
+                addUnsigned(
+                    I(b,c,d),
+                    x
+                ),
+                ac
+            )
+        );
+
+        return addUnsigned(
+            rotateLeft(a,s),
+            b
+        );
+
+    }
+
+
+    function convertToWordArray(string) {
+
+        const msg =
+            unescape(
+                encodeURIComponent(string)
+            );
+
+        const msgLength =
+            msg.length;
+
+        const numberOfWords =
+            (((msgLength + 8) >>> 6) + 1)
+            * 16;
+
+        const wordArray =
+            new Array(numberOfWords - 1);
+
+        let byteCount = 0;
+
+        while (byteCount < msgLength) {
+
+            wordArray[byteCount >> 2] |=
+                (
+                    msg.charCodeAt(byteCount)
+                    &
+                    0xff
+                )
+                <<
+                (
+                    (byteCount % 4) * 8
+                );
+
+            byteCount++;
+
+        }
+
+
+        wordArray[byteCount >> 2] |=
+            0x80 <<
+            (
+                (byteCount % 4) * 8
+            );
+
+
+        wordArray[numberOfWords - 2] =
+            msgLength << 3;
+
+        wordArray[numberOfWords - 1] =
+            msgLength >>> 29;
+
+
+        return wordArray;
+
+    }
+
+
+    function wordToHex(lValue) {
+
+        let wordToHexValue = "";
+
+        for (let i = 0; i <= 3; i++) {
+
+            const byte =
+                (lValue >> (i * 8)) & 255;
+
+            wordToHexValue +=
+                ("0" +
+                    byte.toString(16)
+                ).slice(-2);
+
+        }
+
+        return wordToHexValue;
+
+    }
+
+
+    let x =
+        convertToWordArray(text);
+
+    let a = 0x67452301;
+    let b = 0xefcdab89;
+    let c = 0x98badcfe;
+    let d = 0x10325476;
+
+
+    for (
+        let k = 0;
+        k < x.length;
+        k += 16
+    ) {
+
+        const AA = a;
+        const BB = b;
+        const CC = c;
+        const DD = d;
+
+
+        a = FF(a,b,c,d,x[k+0],7,0xd76aa478);
+        d = FF(d,a,b,c,x[k+1],12,0xe8c7b756);
+        c = FF(c,d,a,b,x[k+2],17,0x242070db);
+        b = FF(b,c,d,a,x[k+3],22,0xc1bdceee);
+
+        a = FF(a,b,c,d,x[k+4],7,0xf57c0faf);
+        d = FF(d,a,b,c,x[k+5],12,0x4787c62a);
+        c = FF(c,d,a,b,x[k+6],17,0xa8304613);
+        b = FF(b,c,d,a,x[k+7],22,0xfd469501);
+
+        a = FF(a,b,c,d,x[k+8],7,0x698098d8);
+        d = FF(d,a,b,c,x[k+9],12,0x8b44f7af);
+        c = FF(c,d,a,b,x[k+10],17,0xffff5bb1);
+        b = FF(b,c,d,a,x[k+11],22,0x895cd7be);
+
+        a = FF(a,b,c,d,x[k+12],7,0x6b901122);
+        d = FF(d,a,b,c,x[k+13],12,0xfd987193);
+        c = FF(c,d,a,b,x[k+14],17,0xa679438e);
+        b = FF(b,c,d,a,x[k+15],22,0x49b40821);
+
+
+        a = GG(a,b,c,d,x[k+1],5,0xf61e2562);
+        d = GG(d,a,b,c,x[k+6],9,0xc040b340);
+        c = GG(c,d,a,b,x[k+11],14,0x265e5a51);
+        b = GG(b,c,d,a,x[k+0],20,0xe9b6c7aa);
+
+        a = GG(a,b,c,d,x[k+5],5,0xd62f105d);
+        d = GG(d,a,b,c,x[k+10],9,0x02441453);
+        c = GG(c,d,a,b,x[k+15],14,0xd8a1e681);
+        b = GG(b,c,d,a,x[k+4],20,0xe7d3fbc8);
+
+        a = GG(a,b,c,d,x[k+9],5,0x21e1cde6);
+        d = GG(d,a,b,c,x[k+14],9,0xc33707d6);
+        c = GG(c,d,a,b,x[k+3],14,0xf4d50d87);
+        b = GG(b,c,d,a,x[k+8],20,0x455a14ed);
+
+        a = GG(a,b,c,d,x[k+13],5,0xa9e3e905);
+        d = GG(d,a,b,c,x[k+2],9,0xfcefa3f8);
+        c = GG(c,d,a,b,x[k+7],14,0x676f02d9);
+        b = GG(b,c,d,a,x[k+12],20,0x8d2a4c8a);
+
+
+        a = HH(a,b,c,d,x[k+5],4,0xfffa3942);
+        d = HH(d,a,b,c,x[k+8],11,0x8771f681);
+        c = HH(c,d,a,b,x[k+11],16,0x6d9d6122);
+        b = HH(b,c,d,a,x[k+14],23,0xfde5380c);
+
+        a = HH(a,b,c,d,x[k+1],4,0xa4beea44);
+        d = HH(d,a,b,c,x[k+4],11,0x4bdecfa9);
+        c = HH(c,d,a,b,x[k+7],16,0xf6bb4b60);
+        b = HH(b,c,d,a,x[k+10],23,0xbebfbc70);
+
+        a = HH(a,b,c,d,x[k+13],4,0x289b7ec6);
+        d = HH(d,a,b,c,x[k+0],11,0xeaa127fa);
+        c = HH(c,d,a,b,x[k+3],16,0xd4ef3085);
+        b = HH(b,c,d,a,x[k+6],23,0x04881d05);
+
+        a = HH(a,b,c,d,x[k+9],4,0xd9d4d039);
+        d = HH(d,a,b,c,x[k+12],11,0xe6db99e5);
+        c = HH(c,d,a,b,x[k+15],16,0x1fa27cf8);
+        b = HH(b,c,d,a,x[k+2],23,0xc4ac5665);
+
+
+        a = II(a,b,c,d,x[k+0],6,0xf4292244);
+        d = II(d,a,b,c,x[k+7],10,0x432aff97);
+        c = II(c,d,a,b,x[k+14],15,0xab9423a7);
+        b = II(b,c,d,a,x[k+5],21,0xfc93a039);
+
+        a = II(a,b,c,d,x[k+12],6,0x655b59c3);
+        d = II(d,a,b,c,x[k+3],10,0x8f0ccc92);
+        c = II(c,d,a,b,x[k+10],15,0xffeff47d);
+        b = II(b,c,d,a,x[k+1],21,0x85845dd1);
+
+        a = II(a,b,c,d,x[k+8],6,0x6fa87e4f);
+        d = II(d,a,b,c,x[k+15],10,0xfe2ce6e0);
+        c = II(c,d,a,b,x[k+6],15,0xa3014314);
+        b = II(b,c,d,a,x[k+13],21,0x4e0811a1);
+
+        a = II(a,b,c,d,x[k+4],6,0xf7537e82);
+        d = II(d,a,b,c,x[k+11],10,0xbd3af235);
+        c = II(c,d,a,b,x[k+2],15,0x2ad7d2bb);
+        b = II(b,c,d,a,x[k+9],21,0xeb86d391);
+
+
+        a = addUnsigned(a, AA);
+        b = addUnsigned(b, BB);
+        c = addUnsigned(c, CC);
+        d = addUnsigned(d, DD);
+
+    }
+
+
+    return (
+        wordToHex(a) +
+        wordToHex(b) +
+        wordToHex(c) +
+        wordToHex(d)
+    ).toLowerCase();
+
 }
 
-function isValidHex(text) {
-    return /^[0-9A-Fa-f]{16}$/.test(text);
+
+// ======================================================
+// CHUYỂN SANG BIT
+// ======================================================
+
+function textToBits(text) {
+
+    return [...new TextEncoder().encode(text)]
+        .map(byte =>
+            byte
+                .toString(2)
+                .padStart(8, "0")
+        )
+        .join(" ");
+
 }
 
-function desEncrypt(text, key) {
-    text = text.trim().toUpperCase();
-    key = key.trim().toUpperCase();
 
-    if (!isValidHex(text)) {
-        alert("Bản rõ DES phải gồm đúng 16 ký tự Hex!");
-        return null;
+// ======================================================
+// XỬ LÝ MÃ HÓA
+// ======================================================
+
+async function encrypt() {
+
+    const text = plaintext.value;
+
+    const algo = algorithm.value;
+
+    if (!text) {
+
+        alert("Vui lòng nhập dữ liệu.");
+
+        return;
+
     }
 
-    if (!isValidHex(key)) {
-        alert("Khóa DES phải gồm đúng 16 ký tự Hex!");
-        return null;
+
+    try {
+
+        let result;
+
+
+        switch (algo) {
+
+            case "caesar":
+
+                if (
+                    keyInput.value.trim() === "" ||
+                    isNaN(Number(keyInput.value))
+                ) {
+
+                    throw new Error(
+                        "Khóa Caesar phải là số."
+                    );
+
+                }
+
+                result =
+                    caesarEncrypt(
+                        text,
+                        Number(keyInput.value)
+                    );
+
+                break;
+
+
+            case "substitution":
+
+                result =
+                    substitution(
+                        text,
+                        keyInput.value,
+                        false
+                    );
+
+                break;
+
+
+            case "vigenere":
+
+                if (!keyInput.value) {
+
+                    throw new Error(
+                        "Vui lòng nhập khóa Vigenere."
+                    );
+
+                }
+
+                result =
+                    vigenere(
+                        text,
+                        keyInput.value,
+                        false
+                    );
+
+                break;
+
+
+            case "affine":
+
+                result =
+                    affine(
+                        text,
+                        keyInput.value,
+                        false
+                    );
+
+                break;
+
+
+            case "hill":
+
+                result =
+                    hill(
+                        text,
+                        keyInput.value,
+                        false
+                    );
+
+                break;
+
+
+            case "sha256":
+
+                result =
+                    await sha256(text);
+
+                break;
+
+
+            case "md5":
+
+                result =
+                    md5(text);
+
+                break;
+
+
+            case "aes":
+
+                throw new Error(
+                    "AES chưa được triển khai trong phiên bản này."
+                );
+
+
+            case "des":
+
+                throw new Error(
+                    "DES chưa được triển khai trong phiên bản này."
+                );
+
+
+            case "rsa":
+
+                throw new Error(
+                    "RSA chưa được triển khai trong phiên bản này."
+                );
+
+
+            default:
+
+                throw new Error(
+                    "Thuật toán không hợp lệ."
+                );
+
+        }
+
+
+        ciphertext.value = result;
+
+        bitInfo.value =
+            textToBits(result);
+
+    }
+    catch (error) {
+
+        alert(error.message);
+
     }
 
-    return desBlock(text, key, false);
 }
 
-function desDecrypt(text, key) {
-    text = text.trim().toUpperCase();
-    key = key.trim().toUpperCase();
 
-    if (!isValidHex(text)) {
-        alert("Bản mã DES phải gồm đúng 16 ký tự Hex!");
-        return null;
+// ======================================================
+// GIẢI MÃ
+// ======================================================
+
+async function decrypt() {
+
+    const text = plaintext.value;
+
+    const algo = algorithm.value;
+
+    if (!text) {
+
+        alert("Vui lòng nhập dữ liệu.");
+
+        return;
+
     }
 
-    if (!isValidHex(key)) {
-        alert("Khóa DES phải gồm đúng 16 ký tự Hex!");
-        return null;
+
+    try {
+
+        let result;
+
+
+        switch (algo) {
+
+            case "caesar":
+
+                result =
+                    caesarDecrypt(
+                        text,
+                        Number(keyInput.value)
+                    );
+
+                break;
+
+
+            case "substitution":
+
+                result =
+                    substitution(
+                        text,
+                        keyInput.value,
+                        true
+                    );
+
+                break;
+
+
+            case "vigenere":
+
+                result =
+                    vigenere(
+                        text,
+                        keyInput.value,
+                        true
+                    );
+
+                break;
+
+
+            case "affine":
+
+                result =
+                    affine(
+                        text,
+                        keyInput.value,
+                        true
+                    );
+
+                break;
+
+
+            case "hill":
+
+                result =
+                    hill(
+                        text,
+                        keyInput.value,
+                        true
+                    );
+
+                break;
+
+
+            case "sha256":
+            case "md5":
+
+                throw new Error(
+                    "Hàm băm không hỗ trợ giải mã."
+                );
+
+
+            case "aes":
+            case "des":
+            case "rsa":
+
+                throw new Error(
+                    "Thuật toán này chưa được triển khai."
+                );
+
+
+            default:
+
+                throw new Error(
+                    "Thuật toán không hợp lệ."
+                );
+
+        }
+
+
+        ciphertext.value = result;
+
+        bitInfo.value =
+            textToBits(result);
+
+    }
+    catch (error) {
+
+        alert(error.message);
+
     }
 
-    return desBlock(text, key, true);
 }
 
-document
-    .getElementById("algorithm")
-    .addEventListener("change", updateAlgorithmUI);
 
-window.addEventListener("load", updateAlgorithmUI);
+// ======================================================
+// XÓA
+// ======================================================
+
+function clearData() {
+
+    plaintext.value = "";
+
+    ciphertext.value = "";
+
+    bitInfo.value = "";
+
+    keyInput.value = "";
+
+}
+
+
+// ======================================================
+// EVENTS
+// ======================================================
+
+category.addEventListener(
+    "change",
+    updateAlgorithms
+);
+
+
+algorithm.addEventListener(
+    "change",
+    updateInterface
+);
+
+
+encryptBtn.addEventListener(
+    "click",
+    encrypt
+);
+
+
+decryptBtn.addEventListener(
+    "click",
+    decrypt
+);
+
+
+clearBtn.addEventListener(
+    "click",
+    clearData
+);
+
+
+// ======================================================
+// KHỞI TẠO
+// ======================================================
+
+updateAlgorithms();
