@@ -3,182 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ứng dụng mã hóa cổ điển</title>
+
+    <title>Ứng dụng mã hóa</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="container">
 
     <header>
-        <div class="badge">CLASSICAL CRYPTOGRAPHY</div>
-        <h1>🔐 ỨNG DỤNG MÃ HÓA CỔ ĐIỂN</h1>
-        <p>Mã hóa và giải mã bằng các thuật toán mật mã cổ điển</p>
+        <div class="badge">CRYPTOGRAPHY</div>
+
+        <h1>🔐 ỨNG DỤNG MÃ HÓA</h1>
+
+        <p>Mã hóa cổ điển, hiện đại, công khai và hàm băm</p>
     </header>
 
+
+    <!-- CẤU HÌNH -->
     <section class="section">
 
         <div class="section-title">
             <div class="section-icon">⚙️</div>
+
             <div>
                 <h2>Cấu hình mã hóa</h2>
-                <p>Lựa chọn thuật toán và bảng chữ cái</p>
+                <p>Lựa chọn nhóm thuật toán và bảng chữ cái</p>
             </div>
         </div>
+
 
         <div class="form-grid">
 
             <div class="form-group">
-                <label for="algorithm">Thuật toán</label>
-                <select id="algorithm">
-                    <option value="caesar">Dịch vòng</option>
-                    <option value="substitution">Mã thay thế</option>
-                    <option value="vigenere">Vigenere</option>
-                    <option value="affine">Affine</option>
-                    <option value="hill">Hill</option>
-                    <option value="des">Mã DES</option>
+                <label for="category">Loại mã hóa</label>
+
+                <select id="category">
+                    <option value="classical">
+                        Mã hóa cổ điển
+                    </option>
+
+                    <option value="modern">
+                        Mã hóa hiện đại
+                    </option>
+
+                    <option value="public">
+                        Mã hóa công khai
+                    </option>
+
+                    <option value="hash">
+                        Hàm băm
+                    </option>
                 </select>
             </div>
 
+
+            <div class="form-group">
+                <label for="algorithm">
+                    Thuật toán
+                </label>
+
+                <select id="algorithm"></select>
+            </div>
+
+
             <div class="form-group" id="alphabetGroup">
-                <label for="alphabet">Bảng chữ cái</label>
+
+                <label for="alphabet">
+                    Bảng chữ cái
+                </label>
+
                 <select id="alphabet">
-                    <option value="26">Z26 - Tiếng Anh</option>
-                    <option value="29">Z29 - Tiếng Việt</option>
+
+                    <option value="26">
+                        Z26 - Tiếng Anh
+                    </option>
+
+                    <option value="29">
+                        Z29 - Tiếng Việt
+                    </option>
+
                 </select>
+
             </div>
 
         </div>
 
-        <div class="form-group">
-            <label for="key">Khóa mã hóa</label>
+
+        <!-- KHÓA -->
+        <div class="form-group" id="keyGroup">
+
+            <label for="key">
+                Khóa mã hóa
+            </label>
+
             <input
                 type="text"
                 id="key"
                 placeholder="Nhập khóa..."
                 autocomplete="off"
             >
+
         </div>
 
-        <div class="guide" id="guide">
-            <div class="guide-icon">💡</div>
-            <div>
-                <strong id="guideTitle">Dịch vòng</strong>
-                <p id="guideText">Nhập khóa là một số nguyên. Ví dụ: 3</p>
+
+        <!-- HƯỚNG DẪN -->
+        <div class="guide">
+
+            <div class="guide-icon">
+                💡
             </div>
+
+            <div>
+
+                <strong id="guideTitle">
+                    Dịch vòng
+                </strong>
+
+                <p id="guideText">
+                    Nhập khóa là một số nguyên. Ví dụ: 3
+                </p>
+
+            </div>
+
         </div>
 
     </section>
 
+
+    <!-- DỮ LIỆU -->
     <section class="section">
 
         <div class="section-title">
-            <div class="section-icon">📝</div>
-            <div>
-                <h2>Dữ liệu</h2>
-                <p>Nhập bản rõ hoặc bản mã để thực hiện xử lý</p>
+
+            <div class="section-icon">
+                📝
             </div>
+
+            <div>
+
+                <h2>Dữ liệu</h2>
+
+                <p>
+                    Nhập bản rõ hoặc bản mã để xử lý
+                </p>
+
+            </div>
+
         </div>
 
+
+        <!-- INPUT -->
         <div class="text-area-group">
+
             <div class="label-row">
-                <label for="plaintext">Bản rõ</label>
-                <span>INPUT</span>
+
+                <label for="plaintext">
+                    Bản rõ / Bản mã
+                </label>
+
+                <span>
+                    INPUT
+                </span>
+
             </div>
+
 
             <textarea
                 id="plaintext"
-                placeholder="Nhập bản rõ..."
+                placeholder="Nhập dữ liệu..."
             ></textarea>
+
         </div>
 
+
+        <!-- BUTTON -->
         <div class="button-grid">
-            <button class="btn encrypt-btn" onclick="encrypt()">
+
+            <button
+                type="button"
+                class="btn encrypt-btn"
+                id="encryptBtn"
+            >
                 🔒 MÃ HÓA
             </button>
 
-            <button class="btn decrypt-btn" onclick="decrypt()">
+
+            <button
+                type="button"
+                class="btn decrypt-btn"
+                id="decryptBtn"
+            >
                 🔓 GIẢI MÃ
             </button>
+
         </div>
 
+
+        <!-- OUTPUT -->
         <div class="text-area-group">
+
             <div class="label-row">
-                <label for="ciphertext">Bản mã</label>
-                <span>OUTPUT</span>
+
+                <label for="ciphertext">
+                    Bản mã / Kết quả
+                </label>
+
+                <span>
+                    OUTPUT
+                </span>
+
             </div>
+
 
             <textarea
                 id="ciphertext"
-                placeholder="Kết quả mã hóa sẽ xuất hiện ở đây..."
+                placeholder="Kết quả sẽ xuất hiện ở đây..."
+                readonly
             ></textarea>
+
         </div>
 
-        <button class="clear-btn" onclick="clearData()">
+
+        <!-- BIT -->
+        <div class="text-area-group">
+
+            <div class="label-row">
+
+                <label for="bitInfo">
+                    Dữ liệu dạng bit
+                </label>
+
+                <span>
+                    BIT
+                </span>
+
+            </div>
+
+
+            <textarea
+                id="bitInfo"
+                readonly
+                placeholder="Dữ liệu byte/bit sẽ xuất hiện ở đây..."
+            ></textarea>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="clear-btn"
+            id="clearBtn"
+        >
             🗑 XÓA DỮ LIỆU
         </button>
 
     </section>
 
+
+    <!-- NHÓM THUẬT TOÁN -->
     <section class="section">
 
         <div class="section-title">
-            <div class="section-icon">🧩</div>
-            <div>
-                <h2>Thuật toán hỗ trợ</h2>
-                <p>Hệ thống hỗ trợ 6 phương pháp mã hóa</p>
+
+            <div class="section-icon">
+                🧩
             </div>
+
+            <div>
+
+                <h2>
+                    Nhóm thuật toán
+                </h2>
+
+                <p>
+                    Các phương pháp được hỗ trợ
+                </p>
+
+            </div>
+
         </div>
+
 
         <div class="algorithm-grid">
 
             <div class="algorithm-card">
-                <div class="card-icon">🔄</div>
-                <h3>Dịch vòng</h3>
-                <p>Caesar Cipher</p>
+
+                <div class="card-icon">
+                    🔄
+                </div>
+
+                <h3>
+                    Mã hóa cổ điển
+                </h3>
+
+                <p>
+                    Caesar, Substitution, Vigenere,
+                    Affine, Hill
+                </p>
+
             </div>
 
-            <div class="algorithm-card">
-                <div class="card-icon">🔤</div>
-                <h3>Mã thay thế</h3>
-                <p>Substitution Cipher</p>
-            </div>
 
             <div class="algorithm-card">
-                <div class="card-icon">🔑</div>
-                <h3>Vigenere</h3>
-                <p>Vigenere Cipher</p>
+
+                <div class="card-icon">
+                    🔐
+                </div>
+
+                <h3>
+                    Mã hóa hiện đại
+                </h3>
+
+                <p>
+                    DES, AES
+                </p>
+
             </div>
 
-            <div class="algorithm-card">
-                <div class="card-icon">📐</div>
-                <h3>Affine</h3>
-                <p>Affine Cipher</p>
-            </div>
 
             <div class="algorithm-card">
-                <div class="card-icon">🔢</div>
-                <h3>Hill</h3>
-                <p>Hill Cipher</p>
+
+                <div class="card-icon">
+                    🔑
+                </div>
+
+                <h3>
+                    Mã hóa công khai
+                </h3>
+
+                <p>
+                    RSA
+                </p>
+
             </div>
 
+
             <div class="algorithm-card">
-                <div class="card-icon">🔐</div>
-                <h3>DES</h3>
-                <p>Data Encryption Standard</p>
+
+                <div class="card-icon">
+                    #️⃣
+                </div>
+
+                <h3>
+                    Hàm băm
+                </h3>
+
+                <p>
+                    MD5, SHA-256
+                </p>
+
             </div>
 
         </div>
 
     </section>
 
+
     <footer>
-        🔐 Classical Cryptography
+
+        🔐 Cryptography
+
         <span>•</span>
-        Z26 / Z29 / DES
+
+        Z26 / Z29 / DES / AES / RSA /
+        MD5 / SHA-256
+
     </footer>
 
 </div>
+
 
 <script src="script.js"></script>
 
