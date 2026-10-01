@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,18 +8,33 @@
     <title>Ứng dụng mã hóa</title>
 
     <link rel="stylesheet" href="style.css">
+
+    <!-- CryptoJS: AES, DES, MD5, SHA-256 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+
+    <!-- JSEncrypt: RSA -->
+    <script src="https://cdn.jsdelivr.net/npm/jsencrypt@3.3.2/bin/jsencrypt.min.js"></script>
 </head>
 
 <body>
 
 <div class="container">
 
+    <!-- HEADER -->
     <header>
-        <div class="badge">CRYPTOGRAPHY</div>
 
-        <h1>🔐 ỨNG DỤNG MÃ HÓA</h1>
+        <div class="badge">
+            CRYPTOGRAPHY
+        </div>
 
-        <p>Mã hóa cổ điển, hiện đại, công khai và hàm băm</p>
+        <h1>
+            🔐 ỨNG DỤNG MÃ HÓA
+        </h1>
+
+        <p>
+            Mã hóa cổ điển, hiện đại, công khai và hàm băm
+        </p>
+
     </header>
 
 
@@ -26,21 +42,30 @@
     <section class="section">
 
         <div class="section-title">
-            <div class="section-icon">⚙️</div>
+
+            <div class="section-icon">
+                ⚙️
+            </div>
 
             <div>
                 <h2>Cấu hình mã hóa</h2>
                 <p>Lựa chọn nhóm thuật toán và bảng chữ cái</p>
             </div>
+
         </div>
 
 
         <div class="form-grid">
 
+            <!-- CATEGORY -->
             <div class="form-group">
-                <label for="category">Loại mã hóa</label>
+
+                <label for="category">
+                    Loại mã hóa
+                </label>
 
                 <select id="category">
+
                     <option value="classical">
                         Mã hóa cổ điển
                     </option>
@@ -56,19 +81,25 @@
                     <option value="hash">
                         Hàm băm
                     </option>
+
                 </select>
+
             </div>
 
 
+            <!-- ALGORITHM -->
             <div class="form-group">
+
                 <label for="algorithm">
                     Thuật toán
                 </label>
 
                 <select id="algorithm"></select>
+
             </div>
 
 
+            <!-- ALPHABET -->
             <div class="form-group" id="alphabetGroup">
 
                 <label for="alphabet">
@@ -92,7 +123,7 @@
         </div>
 
 
-        <!-- KHÓA -->
+        <!-- KEY -->
         <div class="form-group" id="keyGroup">
 
             <label for="key">
@@ -109,7 +140,47 @@
         </div>
 
 
-        <!-- HƯỚNG DẪN -->
+        <!-- RSA KEY AREA -->
+        <div id="rsaGroup" class="rsa-group hidden">
+
+            <div class="rsa-grid">
+
+                <div>
+                    <label for="publicKey">
+                        Public Key
+                    </label>
+
+                    <textarea
+                        id="publicKey"
+                        placeholder="RSA Public Key..."
+                    ></textarea>
+                </div>
+
+                <div>
+                    <label for="privateKey">
+                        Private Key
+                    </label>
+
+                    <textarea
+                        id="privateKey"
+                        placeholder="RSA Private Key..."
+                    ></textarea>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                id="generateRSA"
+                class="small-btn"
+            >
+                🔑 TẠO CẶP KHÓA RSA
+            </button>
+
+        </div>
+
+
+        <!-- GUIDE -->
         <div class="guide">
 
             <div class="guide-icon">
@@ -133,7 +204,7 @@
     </section>
 
 
-    <!-- DỮ LIỆU -->
+    <!-- DATA -->
     <section class="section">
 
         <div class="section-title">
@@ -170,7 +241,6 @@
 
             </div>
 
-
             <textarea
                 id="plaintext"
                 placeholder="Nhập dữ liệu..."
@@ -179,7 +249,7 @@
         </div>
 
 
-        <!-- BUTTON -->
+        <!-- BUTTONS -->
         <div class="button-grid">
 
             <button
@@ -217,11 +287,10 @@
 
             </div>
 
-
             <textarea
                 id="ciphertext"
-                placeholder="Kết quả sẽ xuất hiện ở đây..."
                 readonly
+                placeholder="Kết quả sẽ xuất hiện ở đây..."
             ></textarea>
 
         </div>
@@ -242,7 +311,6 @@
 
             </div>
 
-
             <textarea
                 id="bitInfo"
                 readonly
@@ -252,6 +320,7 @@
         </div>
 
 
+        <!-- CLEAR -->
         <button
             type="button"
             class="clear-btn"
@@ -263,7 +332,7 @@
     </section>
 
 
-    <!-- NHÓM THUẬT TOÁN -->
+    <!-- ALGORITHM GROUP -->
     <section class="section">
 
         <div class="section-title">
@@ -362,14 +431,14 @@
     </section>
 
 
+    <!-- FOOTER -->
     <footer>
 
         🔐 Cryptography
 
         <span>•</span>
 
-        Z26 / Z29 / DES / AES / RSA /
-        MD5 / SHA-256
+        Z26 / Z29 / DES / AES / RSA / MD5 / SHA-256
 
     </footer>
 
