@@ -1696,3 +1696,34 @@ generateRSA.addEventListener(
 // ======================================================
 
 updateAlgorithms();
+
+const crackBtn = document.getElementById("crackBtn");
+
+function crackCaesar() {
+    const text = plaintext.value.trim();
+
+    if (!text) {
+        alert("Vui lòng nhập bản mã cần thám mã.");
+        return;
+    }
+
+    if (algorithm.value !== "caesar") {
+        alert("Hãy chọn thuật toán Caesar để thám mã tự động.");
+        return;
+    }
+
+    const chars = getAlphabet();
+    const results = [];
+
+    for (let key = 0; key < chars.length; key++) {
+        results.push(
+            "Khóa K = " + key + ":\n" +
+            caesar(text, key, true)
+        );
+    }
+
+    showResult(results.join("\n\n"));
+}
+
+crackBtn.addEventListener("click", crackCaesar);
+
