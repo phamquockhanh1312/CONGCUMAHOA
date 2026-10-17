@@ -1,456 +1,106 @@
+
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Ứng dụng mã hóa</title>
-
-    <link rel="stylesheet" href="style.css">
-
-    <!-- CryptoJS: AES, DES, MD5, SHA-256 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
-
-    <!-- JSEncrypt: RSA -->
-    <script src="https://cdn.jsdelivr.net/npm/jsencrypt@3.3.2/bin/jsencrypt.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CRYPTONEX | Cyber Security Lab</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsencrypt@3.3.2/bin/jsencrypt.min.js"></script>
 </head>
-
 <body>
-
 <div class="container">
+  <header>
+    <div class="badge">CYBER SECURITY LAB</div>
+    <h1>CRYPTO<span>NEX</span></h1>
+    <p>Ứng dụng mã hóa, giải mã và thám mã tự động</p>
+  </header>
 
-    <!-- HEADER -->
-    <header>
+  <section class="section">
+    <h2>01 / Cấu hình thuật toán</h2>
+    <div class="form-grid">
+      <div>
+        <label for="category">Nhóm thuật toán</label>
+        <select id="category">
+          <option value="classical">Mã hóa cổ điển</option>
+          <option value="modern">Mã hóa hiện đại</option>
+          <option value="public">Mã hóa công khai</option>
+          <option value="hash">Hàm băm</option>
+        </select>
+      </div>
+      <div>
+        <label for="algorithm">Thuật toán</label>
+        <select id="algorithm"></select>
+      </div>
+      <div id="alphabetGroup">
+        <label for="alphabet">Bảng chữ cái</label>
+        <select id="alphabet">
+          <option value="26">Z26 - Tiếng Anh</option>
+          <option value="29">Z29 - Tiếng Việt</option>
+        </select>
+      </div>
+    </div>
 
-        <div class="badge">
-            CRYPTOGRAPHY
+    <div id="keyGroup">
+      <label for="key">Khóa</label>
+      <input id="key" placeholder="Nhập khóa...">
+    </div>
+
+    <div id="rsaGroup" class="hidden">
+      <div class="form-grid">
+        <div>
+          <label for="publicKey">Public Key</label>
+          <textarea id="publicKey" placeholder="Public Key"></textarea>
         </div>
-
-        <h1>
-            🔐 ỨNG DỤNG MÃ HÓA
-        </h1>
-
-        <p>
-            Mã hóa cổ điển, hiện đại, công khai và hàm băm
-        </p>
-
-    </header>
-
-
-    <!-- CẤU HÌNH -->
-    <section class="section">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                ⚙️
-            </div>
-
-            <div>
-                <h2>Cấu hình mã hóa</h2>
-                <p>Lựa chọn nhóm thuật toán và bảng chữ cái</p>
-            </div>
-
+        <div>
+          <label for="privateKey">Private Key</label>
+          <textarea id="privateKey" placeholder="Private Key"></textarea>
         </div>
-
-
-        <div class="form-grid">
-
-            <!-- CATEGORY -->
-            <div class="form-group">
-
-                <label for="category">
-                    Loại mã hóa
-                </label>
-
-                <select id="category">
-
-                    <option value="classical">
-                        Mã hóa cổ điển
-                    </option>
-
-                    <option value="modern">
-                        Mã hóa hiện đại
-                    </option>
-
-                    <option value="public">
-                        Mã hóa công khai
-                    </option>
-
-                    <option value="hash">
-                        Hàm băm
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- ALGORITHM -->
-            <div class="form-group">
-
-                <label for="algorithm">
-                    Thuật toán
-                </label>
-
-                <select id="algorithm"></select>
-
-            </div>
-
-
-            <!-- ALPHABET -->
-            <div class="form-group" id="alphabetGroup">
-
-                <label for="alphabet">
-                    Bảng chữ cái
-                </label>
-
-                <select id="alphabet">
-
-                    <option value="26">
-                        Z26 - Tiếng Anh
-                    </option>
-
-                    <option value="29">
-                        Z29 - Tiếng Việt
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <!-- KEY -->
-        <div class="form-group" id="keyGroup">
-
-            <label for="key">
-                Khóa mã hóa
-            </label>
-
-            <input
-                type="text"
-                id="key"
-                placeholder="Nhập khóa..."
-                autocomplete="off"
-            >
-
-        </div>
-
-
-        <!-- RSA KEY AREA -->
-        <div id="rsaGroup" class="rsa-group hidden">
-
-            <div class="rsa-grid">
-
-                <div>
-                    <label for="publicKey">
-                        Public Key
-                    </label>
-
-                    <textarea
-                        id="publicKey"
-                        placeholder="RSA Public Key..."
-                    ></textarea>
-                </div>
-
-                <div>
-                    <label for="privateKey">
-                        Private Key
-                    </label>
-
-                    <textarea
-                        id="privateKey"
-                        placeholder="RSA Private Key..."
-                    ></textarea>
-                </div>
-
-            </div>
-
-            <button
-                type="button"
-                id="generateRSA"
-                class="small-btn"
-            >
-                🔑 TẠO CẶP KHÓA RSA
-            </button>
-
-        </div>
-
-
-        <!-- GUIDE -->
-        <div class="guide">
-
-            <div class="guide-icon">
-                💡
-            </div>
-
-            <div>
-
-                <strong id="guideTitle">
-                    Dịch vòng
-                </strong>
-
-                <p id="guideText">
-                    Nhập khóa là một số nguyên. Ví dụ: 3
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- DATA -->
-    <section class="section">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                📝
-            </div>
-
-            <div>
-
-                <h2>Dữ liệu</h2>
-
-                <p>
-                    Nhập bản rõ hoặc bản mã để xử lý
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- INPUT -->
-        <div class="text-area-group">
-
-            <div class="label-row">
-
-                <label for="plaintext">
-                    Bản rõ / Bản mã
-                </label>
-
-                <span>
-                    INPUT
-                </span>
-
-            </div>
-
-            <textarea
-                id="plaintext"
-                placeholder="Nhập dữ liệu..."
-            ></textarea>
-
-        </div>
-
-
-        <!-- BUTTONS -->
-        <div class="button-grid">
-            
-<button type="button" class="btn" id="crackBtn">
-    🕵️ THÁM MÃ TỰ ĐỘNG
-</button>
-
-
-            <button
-                type="button"
-                class="btn encrypt-btn"
-                id="encryptBtn"
-            >
-                🔒 MÃ HÓA
-            </button>
-
-
-            <button
-                type="button"
-                class="btn decrypt-btn"
-                id="decryptBtn"
-            >
-                🔓 GIẢI MÃ
-            </button>
-
-        </div>
-
-
-        <!-- OUTPUT -->
-        <div class="text-area-group">
-
-            <div class="label-row">
-
-                <label for="ciphertext">
-                    Bản mã / Kết quả
-                </label>
-
-                <span>
-                    OUTPUT
-                </span>
-
-            </div>
-
-            <textarea
-                id="ciphertext"
-                readonly
-                placeholder="Kết quả sẽ xuất hiện ở đây..."
-            ></textarea>
-
-        </div>
-
-
-        <!-- BIT -->
-        <div class="text-area-group">
-
-            <div class="label-row">
-
-                <label for="bitInfo">
-                    Dữ liệu dạng bit
-                </label>
-
-                <span>
-                    BIT
-                </span>
-
-            </div>
-
-            <textarea
-                id="bitInfo"
-                readonly
-                placeholder="Dữ liệu byte/bit sẽ xuất hiện ở đây..."
-            ></textarea>
-
-        </div>
-
-
-        <!-- CLEAR -->
-        <button
-            type="button"
-            class="clear-btn"
-            id="clearBtn"
-        >
-            🗑 XÓA DỮ LIỆU
-        </button>
-
-    </section>
-
-
-    <!-- ALGORITHM GROUP -->
-    <section class="section">
-
-        <div class="section-title">
-
-            <div class="section-icon">
-                🧩
-            </div>
-
-            <div>
-
-                <h2>
-                    Nhóm thuật toán
-                </h2>
-
-                <p>
-                    Các phương pháp được hỗ trợ
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="algorithm-grid">
-
-            <div class="algorithm-card">
-
-                <div class="card-icon">
-                    🔄
-                </div>
-
-                <h3>
-                    Mã hóa cổ điển
-                </h3>
-
-                <p>
-                    Caesar, Substitution, Vigenere,
-                    Affine, Hill
-                </p>
-
-            </div>
-
-
-            <div class="algorithm-card">
-
-                <div class="card-icon">
-                    🔐
-                </div>
-
-                <h3>
-                    Mã hóa hiện đại
-                </h3>
-
-                <p>
-                    DES, AES
-                </p>
-
-            </div>
-
-
-            <div class="algorithm-card">
-
-                <div class="card-icon">
-                    🔑
-                </div>
-
-                <h3>
-                    Mã hóa công khai
-                </h3>
-
-                <p>
-                    RSA
-                </p>
-
-            </div>
-
-
-            <div class="algorithm-card">
-
-                <div class="card-icon">
-                    #️⃣
-                </div>
-
-                <h3>
-                    Hàm băm
-                </h3>
-
-                <p>
-                    MD5, SHA-256
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- FOOTER -->
-    <footer>
-
-        🔐 Cryptography
-
-        <span>•</span>
-
-        Z26 / Z29 / DES / AES / RSA / MD5 / SHA-256
-
-    </footer>
-
+      </div>
+      <button id="generateRSA" class="secondary">Tạo cặp khóa RSA 2048-bit</button>
+    </div>
+
+    <div class="guide">
+      <strong id="guideTitle">Caesar</strong>
+      <p id="guideText">Nhập khóa là một số nguyên, ví dụ 3.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>02 / Trung tâm xử lý</h2>
+    <label for="plaintext">Dữ liệu đầu vào</label>
+    <textarea id="plaintext" class="data" placeholder="Nhập bản rõ hoặc bản mã..."></textarea>
+
+    <div class="buttons">
+      <button id="encryptBtn" class="encrypt">↗ MÃ HÓA</button>
+      <button id="decryptBtn" class="decrypt">↙ GIẢI MÃ</button>
+      <button id="crackBtn" class="crack">⌕ THÁM MÃ TỰ ĐỘNG</button>
+    </div>
+
+    <label for="ciphertext">Kết quả</label>
+    <textarea id="ciphertext" class="data" readonly placeholder="Kết quả hiển thị tại đây..."></textarea>
+    <button id="copyBtn" class="secondary">Sao chép kết quả</button>
+
+    <label for="bitInfo">Biểu diễn bit UTF-8</label>
+    <textarea id="bitInfo" readonly placeholder="Dữ liệu dạng bit..."></textarea>
+
+    <button id="clearBtn" class="clear">Xóa dữ liệu</button>
+    <p id="status" role="status"></p>
+  </section>
+
+  <section class="section">
+    <h2>03 / Thư viện thuật toán</h2>
+    <div class="cards">
+      <article><b>01 / CLASSICAL</b><h3>Mã hóa cổ điển</h3><p>Caesar, Substitution, Vigenère, Affine, Hill.</p></article>
+      <article><b>02 / SYMMETRIC</b><h3>Mã hóa hiện đại</h3><p>AES và DES.</p></article>
+      <article><b>03 / ASYMMETRIC</b><h3>Mã hóa công khai</h3><p>RSA với cặp khóa công khai và riêng tư.</p></article>
+      <article><b>04 / HASH</b><h3>Hàm băm</h3><p>MD5 và SHA-256.</p></article>
+    </div>
+  </section>
+
+  <footer>CRYPTONEX · EDUCATIONAL CRYPTOGRAPHY LAB</footer>
 </div>
-
-
 <script src="script.js"></script>
-
 </body>
 </html>
