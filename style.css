@@ -552,3 +552,23 @@ footer span {
     }
 
 }
+
+#crackBtn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 15px;
+    border: 1px solid #00ffcc;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #063d3b, #071c2c);
+    color: #00ffcc;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+#crackBtn:hover {
+    background: #00ffcc;
+    color: #031018;
+    box-shadow: 0 0 20px #00ffcc80;
+}
+
