@@ -1,574 +1,645 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+const category = $("category");
+const algorithm = $("algorithm");
+const alphabet = $("alphabet");
+const alphabetGroup = $("alphabetGroup");
+const keyGroup = $("keyGroup");
+const keyInput = $("key");
+const plaintext = $("plaintext");
+const ciphertext = $("ciphertext");
+const bitInfo = $("bitInfo");
+const encryptBtn = $("encryptBtn");
+const decryptBtn = $("decryptBtn");
+const crackBtn = $("crackBtn");
+const clearBtn = $("clearBtn");
+const copyBtn = $("copyBtn");
+const guideTitle = $("guideTitle");
+const guideText = $("guideText");
+const rsaGroup = $("rsaGroup");
+const publicKey = $("publicKey");
+const privateKey = $("privateKey");
+const generateRSA = $("generateRSA");
+const statusBox = $("status");
+
+const Z26 = "abcdefghijklmnopqrstuvwxyz";
+const Z29 = "aăâbcdđeêghiklmnoôơpqrstuưvxy";
+
+const lists = {
+  classical: [
+    ["caesar", "Caesar"],
+    ["substitution", "Substitution"],
+    ["vigenere", "Vigenère"],
+    ["affine", "Affine"],
+    ["hill", "Hill 2×2"]
+  ],
+  modern: [["aes", "AES"], ["des", "DES"]],
+  public: [["rsa", "RSA"]],
+  hash: [["md5", "MD5"], ["sha256", "SHA-256"]]
+};
+
+const help = {
+  caesar: ["Caesar", "Nhập khóa là số nguyên. Thám mã sẽ thử mọi khóa."],
+  substitution: ["Substitution", "Khóa phải là hoán vị của bảng chữ cái."],
+  vigenere: ["Vigenère", "Nhập khóa dạng chữ. Thám mã tự động chỉ đưa ra dự đoán."],
+  affine: ["Affine", "Nhập khóa a,b, ví dụ 5,8."],
+  hill: ["Hill 2×2", "Nhập ma trận a,b,c,d, ví dụ 3,3,2,5."],
+  aes: ["AES", "Nhập mật khẩu để mã hóa hoặc giải mã."],
+  des: ["DES", "Nhập mật khẩu để mã hóa hoặc giải mã. DES đã lỗi thời."],
+  rsa: ["RSA", "Tạo cặp khóa trước. Public Key mã hóa, Private Key giải mã."],
+  md5: ["MD5", "Hàm băm một chiều, không giải mã được."],
+  sha256: ["SHA-256", "Hàm băm một chiều, không giải mã được."]
+};
+
+function chars() {
+  return alphabet.value === "29" ? Z29 : Z26;
 }
 
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-
-    min-height: 100vh;
-
-    padding: 30px 15px;
-
-    color: #fff;
-
-    background:
-        radial-gradient(
-            circle at top left,
-            #243b64,
-            transparent 40%
-        ),
-        linear-gradient(
-            135deg,
-            #07101d,
-            #101d32
-        );
+function mod(n, m) {
+  return ((n % m) + m) % m;
 }
 
-
-.container {
-    width: 100%;
-    max-width: 1100px;
-
-    margin: auto;
+function gcd(a, b) {
+  while (b) [a, b] = [b, a % b];
+  return Math.abs(a);
 }
 
-
-/* ================= HEADER ================= */
-
-header {
-    text-align: center;
-
-    margin-bottom: 30px;
+function inverse(a, m) {
+  for (let x = 1; x < m; x++) {
+    if (mod(a * x, m) === 1) return x;
+  }
+  return null;
 }
 
-
-.badge {
-    display: inline-block;
-
-    padding: 8px 18px;
-
-    border: 1px solid #4facfe;
-
-    border-radius: 30px;
-
-    color: #4facfe;
-
-    font-size: 12px;
-
-    font-weight: bold;
-
-    letter-spacing: 2px;
-
-    margin-bottom: 15px;
+function setStatus(message, error = false) {
+  statusBox.textContent = message;
+  statusBox.classList.toggle("error", error);
 }
 
-
-header h1 {
-    font-size: 36px;
-
-    margin-bottom: 10px;
+function showResult(result) {
+  ciphertext.value = result;
+  bitInfo.value = [...new TextEncoder().encode(result)]
+    .map(byte => byte.toString(2).padStart(8, "0"))
+    .join(" ");
 }
 
-
-header p {
-    color: #aebbd0;
-
-    font-size: 15px;
+function keepCase(original, result) {
+  return original !== original.toLowerCase()
+    ? result.toUpperCase()
+    : result;
 }
 
+function updateAlgorithms() {
+  algorithm.replaceChildren();
 
-/* ================= SECTION ================= */
+  lists[category.value].forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    algorithm.appendChild(option);
+  });
 
-.section {
-    padding: 25px;
-
-    margin-bottom: 25px;
-
-    border-radius: 18px;
-
-    border: 1px solid rgba(255,255,255,.08);
-
-    background: rgba(20,34,57,.94);
-
-    box-shadow:
-        0 15px 40px rgba(0,0,0,.25);
+  updateInterface();
 }
 
+function updateInterface() {
+  const type = category.value;
+  const algo = algorithm.value;
+  const isClassical = type === "classical";
+  const isRSA = type === "public";
+  const isHash = type === "hash";
 
-.section-title {
-    display: flex;
+  alphabetGroup.classList.toggle("hidden", !isClassical);
+  keyGroup.classList.toggle("hidden", isRSA || isHash);
+  rsaGroup.classList.toggle("hidden", !isRSA);
+  decryptBtn.classList.toggle("hidden", isHash);
+  crackBtn.classList.toggle("hidden", !["caesar", "vigenere"].includes(algo));
 
-    align-items: center;
+  encryptBtn.textContent = isHash ? "TẠO MÃ BĂM" : "MÃ HÓA";
 
-    gap: 15px;
+  guideTitle.textContent = help[algo][0];
+  guideText.textContent = help[algo][1];
 
-    margin-bottom: 25px;
+  const placeholders = {
+    caesar: "Ví dụ: 3",
+    substitution: "Hoán vị bảng chữ cái",
+    vigenere: "Ví dụ: CRYPTO",
+    affine: "Ví dụ: 5,8",
+    hill: "Ví dụ: 3,3,2,5",
+    aes: "Mật khẩu AES",
+    des: "Mật khẩu DES"
+  };
+
+  keyInput.placeholder = placeholders[algo] || "Nhập khóa...";
+  setStatus("");
 }
 
+// CAESAR
 
-.section-icon {
-    width: 50px;
-    height: 50px;
+function caesar(text, key, decrypt = false) {
+  const abc = chars();
+  const shift = Number(key);
 
-    display: flex;
+  if (!Number.isInteger(shift)) {
+    throw Error("Khóa Caesar phải là số nguyên.");
+  }
 
-    align-items: center;
-    justify-content: center;
+  return [...text].map(c => {
+    const i = abc.indexOf(c.toLowerCase());
+    if (i < 0) return c;
 
-    border-radius: 14px;
-
-    font-size: 23px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #4facfe,
-            #00f2fe
-        );
+    const result = abc[mod(i + (decrypt ? -shift : shift), abc.length)];
+    return keepCase(c, result);
+  }).join("");
 }
 
+// SUBSTITUTION
 
-.section-title h2 {
-    font-size: 21px;
+function substitution(text, key, decrypt = false) {
+  const abc = chars();
+  const k = key.toLowerCase();
 
-    margin-bottom: 5px;
+  if ([...k].length !== [...abc].length ||
+      new Set([...k]).size !== [...abc].length ||
+      [...k].some(c => !abc.includes(c))) {
+    throw Error(`Khóa phải là hoán vị hợp lệ gồm ${[...abc].length} ký tự.`);
+  }
+
+  const from = decrypt ? k : abc;
+  const to = decrypt ? abc : k;
+
+  return [...text].map(c => {
+    const i = from.indexOf(c.toLowerCase());
+    return i < 0 ? c : keepCase(c, to[i]);
+  }).join("");
 }
 
+// VIGENERE
 
-.section-title p {
-    color: #9caac0;
+function vigenere(text, key, decrypt = false) {
+  const abc = chars();
+  const k = [...key.toLowerCase()];
 
-    font-size: 14px;
+  if (!k.length || k.some(c => !abc.includes(c))) {
+    throw Error("Khóa Vigenère không hợp lệ với bảng chữ cái đang chọn.");
+  }
+
+  let j = 0;
+
+  return [...text].map(c => {
+    const i = abc.indexOf(c.toLowerCase());
+    if (i < 0) return c;
+
+    const shift = abc.indexOf(k[j++ % k.length]);
+    return keepCase(c, abc[mod(i + (decrypt ? -shift : shift), abc.length)]);
+  }).join("");
 }
 
+// AFFINE
 
-/* ================= FORM ================= */
+function affine(text, key, decrypt = false) {
+  const abc = chars();
+  const m = abc.length;
+  const p = key.split(",").map(s => s.trim());
 
-.form-grid {
-    display: grid;
+  if (p.length !== 2 || p.some(s => s === "" || !Number.isInteger(Number(s)))) {
+    throw Error("Khóa Affine cần dạng a,b, ví dụ 5,8.");
+  }
 
-    grid-template-columns:
-        repeat(3, 1fr);
+  const [a, b] = p.map(Number);
+  const inv = inverse(a, m);
 
-    gap: 20px;
+  if (inv === null) throw Error(`a phải nguyên tố cùng nhau với ${m}.`);
+
+  return [...text].map(c => {
+    const x = abc.indexOf(c.toLowerCase());
+    if (x < 0) return c;
+
+    const y = decrypt ? mod(inv * (x - b), m) : mod(a * x + b, m);
+    return keepCase(c, abc[y]);
+  }).join("");
 }
 
+// HILL 2×2
 
-.form-group {
-    margin-bottom: 18px;
+function hill(text, key, decrypt = false) {
+  const abc = chars();
+  const m = abc.length;
+  const p = key.split(",").map(s => s.trim());
+
+  if (p.length !== 4 || p.some(s => s === "" || !Number.isInteger(Number(s)))) {
+    throw Error("Khóa Hill cần dạng a,b,c,d, ví dụ 3,3,2,5.");
+  }
+
+  let [a, b, c, d] = p.map(Number);
+  const det = mod(a * d - b * c, m);
+  const inv = inverse(det, m);
+
+  if (inv === null) throw Error("Ma trận Hill không khả nghịch.");
+
+  if (decrypt) {
+    [a, b, c, d] = [
+      mod(d * inv, m), mod(-b * inv, m),
+      mod(-c * inv, m), mod(a * inv, m)
+    ];
+  }
+
+  const input = [...text];
+  const positions = [];
+
+  input.forEach((c, i) => {
+    if (abc.includes(c.toLowerCase())) positions.push(i);
+  });
+
+  const values = positions.map(i => abc.indexOf(input[i].toLowerCase()));
+
+  if (!decrypt && values.length % 2) {
+    values.push(abc.indexOf("x") >= 0 ? abc.indexOf("x") : 0);
+  }
+
+  if (decrypt && values.length % 2) {
+    throw Error("Bản mã Hill cần số ký tự hợp lệ chẵn.");
+  }
+
+  const result = [];
+
+  for (let i = 0; i < values.length; i += 2) {
+    result.push(mod(a * values[i] + b * values[i + 1], m));
+    result.push(mod(c * values[i] + d * values[i + 1], m));
+  }
+
+  const output = [...text];
+
+  positions.forEach((pos, i) => {
+    if (result[i] !== undefined) {
+      output[pos] = keepCase(output[pos], abc[result[i]]);
+    }
+  });
+
+  if (result.length > positions.length) {
+    output.push(abc[result[result.length - 1]]);
+  }
+
+  return output.join("");
 }
 
+// AES / DES / HASH
 
-.form-group label,
-.rsa-group label {
-    display: block;
-
-    margin-bottom: 8px;
-
-    color: #dce6f5;
-
-    font-size: 14px;
-
-    font-weight: bold;
+function cryptoLib() {
+  if (typeof CryptoJS === "undefined") {
+    throw Error("Không tải được CryptoJS. Kiểm tra Internet rồi tải lại trang.");
+  }
 }
 
-
-select,
-input,
-textarea {
-    width: 100%;
-
-    outline: none;
-
-    color: #fff;
-
-    background: #0d1a2b;
-
-    border: 1px solid #344a68;
-
-    border-radius: 10px;
-
-    transition: .25s;
+function aesEncrypt(text, key) {
+  cryptoLib();
+  if (!key) throw Error("Vui lòng nhập khóa AES.");
+  return CryptoJS.AES.encrypt(text, key).toString();
 }
 
+function aesDecrypt(text, key) {
+  cryptoLib();
+  if (!key) throw Error("Vui lòng nhập khóa AES.");
 
-select,
-input {
-    height: 46px;
-
-    padding: 0 14px;
+  try {
+    const result = CryptoJS.AES.decrypt(text, key).toString(CryptoJS.enc.Utf8);
+    if (!result) throw Error();
+    return result;
+  } catch {
+    throw Error("Giải mã AES thất bại. Kiểm tra bản mã và khóa.");
+  }
 }
 
-
-textarea {
-    min-height: 180px;
-
-    padding: 15px;
-
-    resize: vertical;
-
-    line-height: 1.6;
-
-    font-family: Consolas, monospace;
+function desEncrypt(text, key) {
+  cryptoLib();
+  if (!key) throw Error("Vui lòng nhập khóa DES.");
+  return CryptoJS.DES.encrypt(text, key).toString();
 }
 
+function desDecrypt(text, key) {
+  cryptoLib();
+  if (!key) throw Error("Vui lòng nhập khóa DES.");
 
-select:focus,
-input:focus,
-textarea:focus {
-    border-color: #4facfe;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(79,172,254,.12);
+  try {
+    const result = CryptoJS.DES.decrypt(text, key).toString(CryptoJS.enc.Utf8);
+    if (!result) throw Error();
+    return result;
+  } catch {
+    throw Error("Giải mã DES thất bại. Kiểm tra bản mã và khóa.");
+  }
 }
 
-
-/* ================= GUIDE ================= */
-
-.guide {
-    display: flex;
-
-    align-items: flex-start;
-
-    gap: 12px;
-
-    padding: 15px;
-
-    border-radius: 12px;
-
-    border: 1px solid rgba(79,172,254,.2);
-
-    background:
-        rgba(79,172,254,.08);
+function md5(text) {
+  cryptoLib();
+  return CryptoJS.MD5(text).toString();
 }
 
-
-.guide-icon {
-    font-size: 22px;
+function sha256(text) {
+  cryptoLib();
+  return CryptoJS.SHA256(text).toString();
 }
 
+// RSA
 
-.guide strong {
-    display: block;
-
-    color: #4facfe;
-
-    margin-bottom: 5px;
+function rsaLibrary() {
+  if (typeof JSEncrypt === "undefined") {
+    throw Error("Không tải được thư viện RSA. Kiểm tra Internet.");
+  }
 }
 
+function generateRSAKeys() {
+  try {
+    rsaLibrary();
+    const rsa = new JSEncrypt({ default_key_size: 2048 });
+    rsa.getKey();
 
-.guide p {
-    color: #aebbd0;
-
-    font-size: 14px;
-
-    line-height: 1.5;
+    publicKey.value = rsa.getPublicKey();
+    privateKey.value = rsa.getPrivateKey();
+    setStatus("Đã tạo cặp khóa RSA. Hãy giữ bí mật Private Key.");
+  } catch (e) {
+    setStatus(e.message || "Không tạo được khóa RSA.", true);
+  }
 }
 
+function rsaEncrypt(text) {
+  rsaLibrary();
+  if (!publicKey.value.trim()) throw Error("Nhập hoặc tạo Public Key RSA.");
 
-/* ================= DATA ================= */
+  const rsa = new JSEncrypt();
+  rsa.setPublicKey(publicKey.value.trim());
 
-.text-area-group {
-    margin-bottom: 20px;
+  const result = rsa.encrypt(text);
+  if (!result) throw Error("RSA mã hóa thất bại. Dữ liệu có thể quá dài.");
+
+  return result;
 }
 
+function rsaDecrypt(text) {
+  rsaLibrary();
+  if (!privateKey.value.trim()) throw Error("Nhập hoặc tạo Private Key RSA.");
 
-.label-row {
-    display: flex;
+  const rsa = new JSEncrypt();
+  rsa.setPrivateKey(privateKey.value.trim());
 
-    align-items: center;
+  const result = rsa.decrypt(text);
+  if (result === false || result === null) throw Error("RSA giải mã thất bại.");
 
-    justify-content: space-between;
-
-    margin-bottom: 8px;
+  return result;
 }
 
-
-.label-row label {
-    font-size: 14px;
-
-    font-weight: bold;
-}
-
-
-.label-row span {
-    color: #4facfe;
-
-    font-size: 11px;
-
-    font-weight: bold;
-
-    letter-spacing: 1px;
-}
-
-
-/* ================= BUTTON ================= */
-
-.button-grid {
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 15px;
-
-    margin-bottom: 20px;
-}
-
-
-.btn,
-.clear-btn,
-.small-btn {
-    border: none;
-
-    border-radius: 10px;
-
-    color: #fff;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    transition: .25s;
-}
-
-
-.btn {
-    height: 50px;
-
-    font-size: 14px;
-}
-
-
-.encrypt-btn {
-    background:
-        linear-gradient(
-            135deg,
-            #00b09b,
-            #96c93d
-        );
-}
-
-
-.decrypt-btn {
-    background:
-        linear-gradient(
-            135deg,
-            #4776e6,
-            #8e54e9
-        );
-}
-
-
-.btn:hover,
-.clear-btn:hover,
-.small-btn:hover {
-    transform: translateY(-2px);
-
-    filter: brightness(1.1);
-}
-
-
-.clear-btn {
-    width: 100%;
-
-    height: 50px;
-
-    margin-top: 5px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #ef4444,
-            #b91c1c
-        );
-}
-
-
-/* ================= RSA ================= */
-
-.hidden {
-    display: none !important;
-}
-
-
-.rsa-group {
-    margin-bottom: 20px;
-}
-
-
-.rsa-grid {
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 15px;
-
-    margin-bottom: 15px;
-}
-
-
-.rsa-grid textarea {
-    min-height: 170px;
-}
-
-
-.small-btn {
-    padding: 12px 18px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #4facfe,
-            #00c6ff
-        );
-}
-
-
-/* ================= ALGORITHM ================= */
-
-.algorithm-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(4, 1fr);
-
-    gap: 15px;
-}
-
-
-.algorithm-card {
-    padding: 20px;
-
-    border-radius: 14px;
-
-    background: #0d1a2b;
-
-    border: 1px solid #263c59;
-
-    transition: .25s;
-}
-
-
-.algorithm-card:hover {
-    transform: translateY(-3px);
-
-    border-color: #4facfe;
-}
-
-
-.card-icon {
-    font-size: 28px;
-
-    margin-bottom: 15px;
-}
-
-
-.algorithm-card h3 {
-    font-size: 16px;
-
-    margin-bottom: 8px;
-}
-
-
-.algorithm-card p {
-    color: #9caac0;
-
-    font-size: 13px;
-
-    line-height: 1.5;
-}
-
-
-/* ================= FOOTER ================= */
-
-footer {
-    padding: 10px 0 20px;
-
-    color: #7f8da3;
-
-    text-align: center;
-
-    font-size: 13px;
-}
-
-
-footer span {
-    margin: 0 8px;
-
-    color: #4facfe;
-}
-
-
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 850px) {
-
-    .form-grid {
-        grid-template-columns: 1fr;
+// MÃ HÓA / GIẢI MÃ
+
+function encrypt() {
+  if (!plaintext.value) {
+    setStatus("Vui lòng nhập dữ liệu.", true);
+    return;
+  }
+
+  try {
+    const t = plaintext.value;
+    const k = keyInput.value;
+    let result;
+
+    switch (algorithm.value) {
+      case "caesar": result = caesar(t, k); break;
+      case "substitution": result = substitution(t, k); break;
+      case "vigenere": result = vigenere(t, k); break;
+      case "affine": result = affine(t, k); break;
+      case "hill": result = hill(t, k); break;
+      case "aes": result = aesEncrypt(t, k); break;
+      case "des": result = desEncrypt(t, k); break;
+      case "rsa": result = rsaEncrypt(t); break;
+      case "md5": result = md5(t); break;
+      case "sha256": result = sha256(t); break;
+      default: throw Error("Thuật toán không hợp lệ.");
     }
 
-    .algorithm-grid {
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
-
+    showResult(result);
+    setStatus("Đã xử lý dữ liệu thành công.");
+  } catch (e) {
+    setStatus(e.message, true);
+  }
 }
 
+function decrypt() {
+  if (!plaintext.value) {
+    setStatus("Vui lòng nhập bản mã cần giải mã.", true);
+    return;
+  }
 
-@media (max-width: 650px) {
+  try {
+    const t = plaintext.value;
+    const k = keyInput.value;
+    let result;
 
-    body {
-        padding: 15px 10px;
+    switch (algorithm.value) {
+      case "caesar": result = caesar(t, k, true); break;
+      case "substitution": result = substitution(t, k, true); break;
+      case "vigenere": result = vigenere(t, k, true); break;
+      case "affine": result = affine(t, k, true); break;
+      case "hill": result = hill(t, k, true); break;
+      case "aes": result = aesDecrypt(t, k); break;
+      case "des": result = desDecrypt(t, k); break;
+      case "rsa": result = rsaDecrypt(t); break;
+      case "md5":
+      case "sha256": throw Error("Hàm băm không thể giải mã ngược.");
+      default: throw Error("Thuật toán không hợp lệ.");
     }
 
-
-    header h1 {
-        font-size: 27px;
-    }
-
-
-    .section {
-        padding: 18px;
-    }
-
-
-    .button-grid,
-    .rsa-grid {
-        grid-template-columns: 1fr;
-    }
-
-
-    .algorithm-grid {
-        grid-template-columns: 1fr;
-    }
-
-
-    .section-title {
-        align-items: flex-start;
-    }
-
+    showResult(result);
+    setStatus("Giải mã hoàn tất.");
+  } catch (e) {
+    setStatus(e.message, true);
+  }
 }
 
-#crackBtn {
-    width: 100%;
-    margin-top: 12px;
-    padding: 15px;
-    border: 1px solid #00ffcc;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #063d3b, #071c2c);
-    color: #00ffcc;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.25s;
+// THÁM MÃ CAESAR
+
+function crackCaesar(text) {
+  const abc = chars();
+  const lines = [];
+
+  for (let k = 0; k < abc.length; k++) {
+    lines.push(`Khóa K = ${k}\n${caesar(text, k, true)}`);
+  }
+
+  return lines.join("\n\n--------------------\n\n");
 }
 
-#crackBtn:hover {
-    background: #00ffcc;
-    color: #031018;
-    box-shadow: 0 0 20px #00ffcc80;
+// THÁM MÃ VIGENÈRE: ƯỚC LƯỢNG THỐNG KÊ
+
+function crackVigenere(text) {
+  const abc = chars();
+  const letters = [...text.toLowerCase()]
+    .filter(c => abc.includes(c))
+    .map(c => abc.indexOf(c));
+
+  if (letters.length < 12) {
+    throw Error("Bản mã quá ngắn để thám mã Vigenère có ý nghĩa. Hãy thử bản dài hơn.");
+  }
+
+  const englishFreq = [
+    .08167,.01492,.02782,.04253,.12702,.02228,.02015,
+    .06094,.06966,.00153,.00772,.04025,.02406,.06749,
+    .07507,.01929,.00095,.05987,.06327,.09056,.02758,
+    .00978,.02360,.00150,.01974,.00074
+  ];
+
+  const expected = abc.length === 26
+    ? englishFreq
+    : Array(abc.length).fill(1 / abc.length);
+
+  function shiftScore(group, shift) {
+    const counts = Array(abc.length).fill(0);
+
+    group.forEach(v => counts[mod(v - shift, abc.length)]++);
+
+    const total = group.length;
+    let score = 0;
+
+    for (let i = 0; i < abc.length; i++) {
+      const want = expected[i] * total;
+      if (want > 0) score += (counts[i] - want) ** 2 / want;
+    }
+
+    return score;
+  }
+
+  function indexOfCoincidence(group) {
+    if (group.length < 2) return 0;
+
+    const counts = Array(abc.length).fill(0);
+    group.forEach(v => counts[v]++);
+
+    const numerator = counts.reduce((sum, n) => sum + n * (n - 1), 0);
+    return numerator / (group.length * (group.length - 1));
+  }
+
+  const candidates = [];
+  const maxLen = Math.min(12, Math.floor(letters.length / 3));
+
+  for (let len = 1; len <= maxLen; len++) {
+    const groups = Array.from({ length: len }, (_, col) =>
+      letters.filter((_, i) => i % len === col)
+    );
+
+    const key = groups.map(group => {
+      let best = 0;
+      let bestScore = Infinity;
+
+      for (let shift = 0; shift < abc.length; shift++) {
+        const score = shiftScore(group, shift);
+
+        if (score < bestScore) {
+          bestScore = score;
+          best = shift;
+        }
+      }
+
+      return best;
+    });
+
+    const averageIC = groups.reduce(
+      (sum, group) => sum + indexOfCoincidence(group), 0
+    ) / len;
+
+    const keyText = key.map(n => abc[n]).join("");
+    let keyIndex = 0;
+
+    const decoded = [...text].map(c => {
+      const i = abc.indexOf(c.toLowerCase());
+      if (i < 0) return c;
+
+      const result = abc[mod(i - key[keyIndex++ % len], abc.length)];
+      return keepCase(c, result);
+    }).join("");
+
+    candidates.push({
+      length: len,
+      key: keyText,
+      plaintext: decoded,
+      ic: averageIC
+    });
+  }
+
+  // Heuristic: favor IC values typical of natural-language text.
+  candidates.sort((a, b) =>
+    Math.abs(b.ic - 0.066) - Math.abs(a.ic - 0.066)
+  );
+
+  return candidates.slice(0, 8);
 }
 
+function crackAutomatically() {
+  const text = plaintext.value.trim();
+
+  if (!text) {
+    setStatus("Nhập bản mã trước khi thám mã.", true);
+    return;
+  }
+
+  try {
+    if (algorithm.value === "caesar") {
+      showResult(crackCaesar(text));
+      setStatus("Đã thử tất cả khóa Caesar. Tìm bản rõ có nghĩa.");
+      return;
+    }
+
+    if (algorithm.value === "vigenere") {
+      const results = crackVigenere(text);
+
+      showResult(results.map(item =>
+        `Độ dài khóa: ${item.length}\n` +
+        `Khóa dự đoán: ${item.key}\n` +
+        `IC: ${item.ic.toFixed(4)}\n` +
+        `Bản rõ dự đoán:\n${item.plaintext}`
+      ).join("\n\n--------------------\n\n"));
+
+      setStatus("Đã tạo các phương án Vigenère. Kết quả là dự đoán, không đảm bảo chính xác.");
+      return;
+    }
+
+    setStatus("Chọn Caesar hoặc Vigenère để thám mã.", true);
+  } catch (e) {
+    setStatus(e.message, true);
+  }
+}
+
+// CÁC NÚT
+
+category.addEventListener("change", updateAlgorithms);
+algorithm.addEventListener("change", updateInterface);
+alphabet.addEventListener("change", updateInterface);
+encryptBtn.addEventListener("click", encrypt);
+decryptBtn.addEventListener("click", decrypt);
+crackBtn.addEventListener("click", crackAutomatically);
+generateRSA.addEventListener("click", generateRSAKeys);
+
+clearBtn.addEventListener("click", () => {
+  plaintext.value = "";
+  ciphertext.value = "";
+  bitInfo.value = "";
+  keyInput.value = "";
+  setStatus("");
+});
+
+copyBtn.addEventListener("click", async () => {
+  if (!ciphertext.value) {
+    setStatus("Chưa có kết quả để sao chép.", true);
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(ciphertext.value);
+    setStatus("Đã sao chép kết quả.");
+  } catch {
+    ciphertext.focus();
+    ciphertext.select();
+    setStatus("Hãy sao chép thủ công bằng Ctrl+C.");
+  }
+});
+
+updateAlgorithms();
